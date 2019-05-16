@@ -1,0 +1,19 @@
+usage: simple_tide_report.py [-h] -i INPUT [-o OUTPUT] [-b BOGUS] [-k APIKEY]
+                             [-a] [-l LOCAL] [-d]
+
+TIDE reporting tool with simplified CSV output and statistics
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INPUT, --input INPUT
+                        Input filename
+  -o OUTPUT, --output OUTPUT
+                        CSV Output to <filename>
+  -b BOGUS, --bogus BOGUS
+                        Output invalid lines to file
+  -k APIKEY, --apikey APIKEY
+                        Overide API Key
+  -a, --active          Process active only
+  -l LOCAL, --local LOCAL
+                        Use local database <filename>
+  -d, --debug           Enable debug messages
