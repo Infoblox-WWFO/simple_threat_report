@@ -2,6 +2,7 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 """
 ------------------------------------------------------------------------
+
  Description:
    Library to simplify scripting for Infoblox TIDE
 
@@ -11,6 +12,7 @@
  Author: Chris Marrison
 
  ChangeLog:
+   20190605    v2.2    Added threatproperty to tideactivefeed function
    20190104    v2.1    Changed to Simplified BSD license
    20181122    v2.0    Added functions to get threat classes, properties
                        and stats
@@ -28,7 +30,7 @@
    20180424    v0.1    Initial test library collection including data types
  Todo:
 
- Copyright (c) 2018 Chris Marrison
+ Copyright (c) 2018 Chris Marrison / Infoblox
 
  Redistribution and use in source and binary forms,
  with or without modification, are permitted provided
@@ -53,9 +55,10 @@
  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
+
 ------------------------------------------------------------------------
 """
-__version__ = '2.1'
+__version__ = '2.2'
 __author__ = 'Chris Marrison'
 
 import logging
@@ -77,7 +80,7 @@ def threat_classes(apikey):
     Query Infoblox TIDE for all available threat classes
 
         Input:
-            apikey = TIDE API Key (string)
+            apikey: TIDE API Key (string)
 
         Output:
            response.status_code or zero on exception
@@ -103,9 +106,9 @@ def threat_properties(apikey, threatclass=""):
     Query Infoblox TIDE for threat properties
 
         Input:
-            apikey = TIDE API Key (string)
+            apikey: TIDE API Key (string)
         Optional input:
-            threatclass = threat class
+            threatclass: threat class
 
         Output:
            response.status_code or zero on exception
@@ -115,7 +118,6 @@ def threat_properties(apikey, threatclass=""):
     url = tideurl+'/data/properties'
     if threatclass:
         url = url+'?class='+threatclass
-
     # Call TIDE API
     try:
         response = requests.request("GET",url, headers=headers, auth=requests.auth.HTTPBasicAuth(apikey,''))
@@ -133,11 +135,11 @@ def threat_stats(apikey, period=""):
     Query Infoblox TIDE for threat class stats
 
         Input:
-            apikey = TIDE API Key (string)
+            apikey: TIDE API Key (string)
         Optional input:
-            period = one of ('daily', 'weekly', 'monthly')
-            format = data format
-            rlimit = record limit
+            period: one of ('daily', 'weekly', 'monthly')
+            format: data format
+            rlimit: record limit
 
         Output:
            response.status_code or zero on exception
@@ -168,12 +170,12 @@ def querytide(datatype, query, apikey, format="",rlimit=""):
     Query Infoblox TIDE for all available threat data
 
         Input:
-            datatype = "host", "ip" or "url"
-            query = query data
-            apikey = TIDE API Key (string)
+            datatype: "host", "ip" or "url"
+            query: query data
+            apikey: TIDE API Key (string)
         Optional input:
-            format = data format
-            rlimit = record limit
+            format: data format
+            rlimit: record limit
 
         Output:
            response.status_code or zero on exception
@@ -204,12 +206,12 @@ def querytideactive(datatype, query, apikey, format="",rlimit=""):
     i.e. threat data that has not expired at time of call
 
         Input:
-            datatype = "host", "ip" or "url"
-            query = query data
-            apikey = TIDE API Key (string)
+            datatype: "host", "ip" or "url"
+            query: query data
+            apikey: TIDE API Key (string)
         Optional input:
-            format = data format
-            rlimit = record limit
+            format: data format
+            rlimit: record limit
 
         Output:
            response.status_code or zero on exception
@@ -242,12 +244,12 @@ def querytidestate(datatype, query, apikey, format="",rlimit=""):
     Query Infoblox TIDE State Tables for specific query
 
         Input:
-            datatype = "host", "ip" or "url"
-            query = query data
-            apikey = TIDE API Key (string)
+            datatype: "host", "ip" or "url"
+            query: query data
+            apikey: TIDE API Key (string)
         Optional input:
-            format = data format
-            rlimit = record limit
+            format: data format
+            rlimit: record limit
 
         Output:
            response.status_code or zero on exception
@@ -293,19 +295,19 @@ def querytidestate(datatype, query, apikey, format="",rlimit=""):
     #for threat in threats:
 #"""
 
-def tideactivefeed(datatype, apikey, profile="", threatclass="", format="", rlimit=""):
+def tideactivefeed(datatype, apikey, profile="", threatclass="", threatproperty="", format="", rlimit=""):
     """
     Bulk "active" threat intel download from Infoblox TIDE state tables
     for specified datatype.
 
         Required input:
-            datatype = "host", "ip" or "url"
-            apikey = TIDE API Key (string)
+            datatype: "host", "ip" or "url"
+            apikey: TIDE API Key (string)
         Optional input:
-            profile = Data provider
-            threatclass = data class
-            format = data format
-            rlimit = record limit
+            profile: Data provider
+            threatclass: data class
+            format: data format
+            rlimit: record limit
 
         Output:
             response.status_code or zero on exception
@@ -321,6 +323,8 @@ def tideactivefeed(datatype, apikey, profile="", threatclass="", format="", rlim
         url = url+"&profile="+profile
     if threatclass:
         url = url+"&class="+threatclass
+    if threatproperty:
+        url = url+"&property="+threatproperty
     if format:
         url = url+"&data_format="+format
     if rlimit:
@@ -344,11 +348,11 @@ def dossierquery(query,apikey,type="host",sources="all"):
     Simple Dossier Query
 
         Input:
-            query = item to lookup
-            apikey = TIDE APIKEY
+            query: item to lookup
+            apikey: TIDE APIKEY
         Output:
-            rcode = response code
-            rtext = response text
+            rcode: response code
+            rtext: response text
     """
     # Create RESTful API request
     if sources == "all":
@@ -378,10 +382,11 @@ def data_type(qdata, host_regex, url_regex):
     Validate and determine data type (host, ip or url)
 
         Input:
-            qdata - data to determine type/validity
+            qdata: data to determine type/validity
             host_regex/url_regex: pre-compiled regexes
 
-        Returns data type of qdata as one of "ip", "host", or "url"
+        Ouput:
+            Returns data type of qdata as a string ("ip", "host", or "url")
     """
     if validate_ip(qdata):
         dtype = "ip"
@@ -419,6 +424,10 @@ def validate_fqdn(hostname,regex):
     """
     Validate input data is a legitmate fqdn
 
+    Input:
+        hostname: fqdn as a string
+
+    Output:
         Returns True if valid
         Returns False if not valid
     """
@@ -434,6 +443,10 @@ def validate_ip(ip):
     """
     Validate input data is a valid IP address
 
+    Input:
+        ip: ip address as a string
+
+    Output:
         Returns True if valid
         Returns False if not valid
     """
@@ -448,6 +461,11 @@ def validate_url(url,regex):
     """
     Validate input data is a valid URL
 
+    Input:
+        url: string to verify as URL
+        regex: pre-compiled regex obj
+
+    Output:
         Returns True if valid
         Returns False if not valid
     """
@@ -461,10 +479,10 @@ def reverse_labels(domain):
     """
     Reserve order of domain labels (or any dot separated data, e.g. IP)
 
-        Input:
-            domain = domain.labels
-        Output:
-            rdomain = labels.domain
+    Input:
+        domain: domain.labels
+    Output:
+        rdomain: labels.domain
     """
     rdomain = ""
     labels = domain.split(".")
@@ -481,8 +499,10 @@ def opendb(dbfile):
     """
     Open sqlite db and return cursor()
 
-        Input:
-            dbfile = path to file
+    Input:
+        dbfile: path to file
+
+    Output:
         Returns a db.cursor()
     """
     if os.path.isfile(dbfile):
@@ -499,8 +519,11 @@ def get_table(cursor):
     """
     Determine db table and return
 
-        Returns name of single db table
-        exits with error if more than one table present
+    Input:
+        cursor: db.cursor object
+
+    Output:
+        Returns name of single db table or None
     """
     ### Determine table name ###
     select = 'SELECT name FROM sqlite_master WHERE type="table"'
@@ -521,11 +544,14 @@ def db_query(db_cursor,table,query_type,query_data,*flags):
     """
     Perform db query and return appropriate rows
 
-        Input:
-            db_cursor = db cursor object
+    Input:
+        db_cursor: db.cursor object
+        table: database table name
+        query_type: data type for query
+        query_data: search string
 
-        Output:
-            All matching db rows
+    Output:
+        All matching db rows
     """
     if query_type == "host":
         ### Form DB Query ###

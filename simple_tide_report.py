@@ -11,25 +11,24 @@
   For more extensive output for a specific IOC use tide-lookup.py
 
  Requirements:
-  Requires ibtidelib, requests, tqdm
+  Requires bloxone, tqdm
 
  Usage:
     simple_tide_report.py [options] <query>
         -h  help
+        -c  <file> inifile location (default ./config.ini)
         -i  <file> Input file (one IOC per line)
         -o  <file> CSV Output file for results
         -b  <file> File for reporting of bogus lines
-        -k  <key> TIDE apikey
         -a  active threats only
         -l  local database (activeonly)
         -d  debug output
 
  Author: Chris Marrison
 
- Date Last Updated: 20190510
+ Date Last Updated: 20211004
 
  .. todo::
-    * Config file
     * Option to treat URLs as hostnames i.e. parse URL to extract host
     * Considering adding option to do DNS lookup on hosts and TIDE lookups
       on returned CNAMEs and IPs, however, may need different data structure
@@ -62,9 +61,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 """
-__version__ = '2.5'
+__version__ = '3.0.0'
 __author__ = 'Chris Marrison'
 
+import bloxone
 import sys
 import os
 import shutil
@@ -77,51 +77,11 @@ import json
 import logging
 import tqdm
 
-# Add '.' to path if ios (Pythonista) to find ibtidelib
-if sys.platform == 'ios':
-    sys.path.append('.')
-
-import ibtidelib
-
 # ** Global Variables **
-# apikey = ''
 log = logging.getLogger(__name__)
 
 # ** Functions **
 
-def read_config(cfg_filename):
-    '''
-    Open and parse ini file
-
-    Parameters:
-        cfg_filename (str): name of inifile
-
-    Returns:
-        api_key (str): API Key for authentication
-
-    '''
-    cfg = configparser.ConfigParser()
-
-    # Attempt to read api_key from ini file
-    try:
-        cfg.read(cfg_filename)
-    except configparser.Error as err:
-        log.error(err)
-
-    # Look for TIDE section
-    if 'TIDE' in cfg:
-        # Check for api_key in TIDE section
-        if 'api_key' in cfg['TIDE']:
-            api_key = cfg['TIDE']['api_key'].strip("'\"")
-            log.debug('API Key Found in {}: {}'.format(cfg_filename, api_key))
-        else:
-            log.warn('No API key (api_key) variable in section TIDE.')
-            api_key = ''
-    else:
-        log.warn('No TIDE Section in config file: {}'.format(cfg_filename))
-        api_key = ''
-
-    return api_key
 
 def parseargs():
     '''
@@ -143,8 +103,6 @@ def parseargs():
                        help="Output invalid lines to file")
     parse.add_argument('-c', '--config', type=str, default='config.ini',
                        help="Overide Config file")
-    parse.add_argument('-k', '--apikey', type=str,
-                       help="Overide API Key")
     parse.add_argument('-a', '--active', action='store_true',
                        help="Process active only")
     parse.add_argument('-l', '--local', type=str,
@@ -289,14 +247,14 @@ def most_recent(t1, t2):
     return mostrecent
 
 
-def checkactive(query, qtype, apikey):
+def checkactive(query, qtype, b1td):
     '''
     Check for active threat intel, parse and output results
 
     Parameters:
         query (str): hostname, ip, or url
         qtype (str): query type (host, ip, url)
-        apikey (str): TIDE API key
+        b1td (obj): Instantiated bloxone.b1td class
 
     Returns:
         totalthreats (int): number of active threats Found
@@ -314,14 +272,14 @@ def checkactive(query, qtype, apikey):
     tclasses = []
 
     # Query active TIDE data
-    rcode, rtext = ibtidelib.querytidestate(qtype, query, apikey)
+    response = b1td.querytidestate(qtype, query)
     # Process Response
-    if rcode == requests.codes.ok:
+    if response.status_code in b1td.return_codes_ok:
         # Parse json
-        parsed_json = json.loads(rtext)
+        parsed_json = json.loads(response.text)
 
         log.debug('Quey: {}, Query type: {}'.format(query, qtype))
-        log.debug('Raw response: {}'.format(rtext))
+        log.debug('Raw response: {}'.format(response.text))
 
         # Parse Results
         # Check for threat construct
@@ -351,14 +309,14 @@ def checkactive(query, qtype, apikey):
     return totalthreats, profiles, tclasses
 
 
-def checktide(query, qtype, apikey):
+def checktide(query, qtype, b1td):
     '''
     Check against all threat intel data, parse and output results
 
     Parameters:
         query (str): hostname, ip, or url
         qtype (str): query type (host, ip, url)
-        apikey (str): TIDE API key
+        b1td (obj): Instantiated bloxone.b1td class
 
     Returns:
         totalthreats (int): number of active threats Found
@@ -380,16 +338,16 @@ def checktide(query, qtype, apikey):
     tclasses = []
 
     # Query TIDE (complete)
-    rcode, rtext = ibtidelib.querytide(qtype, query, apikey)
+    response = b1td.querytide(qtype, query)
 
     # Process response
-    if rcode == requests.codes.ok:
+    if response.status_code in b1td.return_codes_ok:
 
         # Parse json
-        parsed_json = json.loads(rtext)
+        parsed_json = json.loads(response.text)
 
         log.debug('Quey: {}, Query type: {}'.format(query, qtype))
-        log.debug('Raw response: {}'.format(rtext))
+        log.debug('Raw response: {}'.format(response.text))
 
         # Check for threat construct
         if "threat" in parsed_json.keys():
@@ -459,7 +417,7 @@ def checkoffline(query, qtype, db_cursor, db_table):
     tclasses = []
 
     # Query active TIDE data
-    rows = ibtidelib.db_query(db_cursor, db_table, qtype, query)
+    rows = bloxone.utils.db_query(db_cursor, db_table, qtype, query)
     # Process Response
 
     log.debug('Quey: {}, Query type: {}'.format(query, qtype))
@@ -598,7 +556,6 @@ def main():
     Core logic when running as script
 
     '''
-    #global apikey
 
     # Local Variables
     exitcode = 0
@@ -626,13 +583,8 @@ def main():
     else:
         configfile = 'config.ini'
 
-    # Set API Key
-    if args.apikey:
-        apikey = args.apikey
-    else:
-        apikey = read_config(configfile)
-    if apikey == '':
-        log.error('API Key not set.')
+    # Initialise bloxone
+    b1td = bloxone.b1td(configfile)
 
     # General Options
     activeonly = args.active
@@ -644,9 +596,9 @@ def main():
         log.debug('Forcing check for active threats only.')
         activeonly = True
         log.debug('Opening local database {}'.format(database))
-        db_cursor = ibtidelib.opendb(database)
+        db_cursor = bloxone.utils.opendb(database)
         if db_cursor:
-            db_table = ibtidelib.get_table(db_cursor)
+            db_table = bloxone.utils.get_table(db_cursor)
             if not db_table:
                 log.error('Local database table error, exiting.')
                 sys.exit(1)
@@ -677,7 +629,7 @@ def main():
         outfile = False
 
     # Build regexes for data_type checking
-    host_regex, url_regex = ibtidelib.buildregex()
+    host_regex, url_regex = bloxone.utils.buildregex()
 
     # Check for input file and attempt to read
     log.debug('Attempting to open input file: {}'.format(inputfile))
@@ -701,7 +653,7 @@ def main():
                     pbar.update(1)
 
                     # Get data type for query
-                    qtype = ibtidelib.data_type(query, host_regex, url_regex)
+                    qtype = bloxone.utils.data_type(query, host_regex, url_regex)
 
                     # Check qtype and log bogus lines
                     log.debug("Query: {}".format(query))
@@ -721,14 +673,14 @@ def main():
                             log.debug("Querying TIDE Active State Table...")
                             activethreats[query] = checkactive(query,
                                                                qtype,
-                                                               apikey)
+                                                               b1td)
 
                         # Call checktide
                         if not activeonly:
                             log.debug("Querying TIDE for all data...")
                             totalthreats[query] = checktide(query,
                                                             qtype,
-                                                            apikey)
+                                                            b1td)
                     else:
                         # ASSERT: qtype == "invalid"
                         bogus_lines += 1

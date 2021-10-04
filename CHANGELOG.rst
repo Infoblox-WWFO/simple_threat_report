@@ -3,9 +3,10 @@ ChangeLog
 *********
 
 
+| 20190626    v2.51   Minor clean up of comments
 | 20190503    v2.5    Moved to config.ini for apikey
-| 20190418    v2.3    Added test for 'ios' to add cwd to path 
-| 20190112    v2.2    Changed to use if __main__ construct
+| 20190418    v2.3    Added test for 'ios' to add cwd to path
+| 20190112    v2.2    Changed to use of if __main__ construct
 | 20190110    v2.1    Added additional error checking and debug logging
 | 20181112    v2.0    Added offline capability and classes to activeonly report
 | 20181112    v1.6    Attempt to add handling of API Exception
