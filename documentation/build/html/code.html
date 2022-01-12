@@ -1,50 +1,58 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Source Documentation &mdash; Simple TIDE Report 2.3 documentation</title>
   
 
   
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="ChangeLog" href="version_history.html" />
     <link rel="prev" title="User Guide" href="user_guide.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -75,6 +83,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -86,7 +95,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input_format.html">Input File Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
@@ -98,6 +106,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,18 +141,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Source Documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/code.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -161,61 +172,53 @@
 <span id="source-documentation"></span><h1>Source Documentation<a class="headerlink" href="#module-simple_tide_report" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
 <blockquote>
-<div><dl class="docutils">
-<dt>Description:</dt>
-<dd><p class="first">Lookup query against TIDE active state and historic data
+<div><dl>
+<dt>Description:</dt><dd><p>Lookup query against TIDE active state and historic data
 producing basic report on whether there is active/historical
 data with simplified report output.</p>
-<p class="last">For more extensive output for a specific IOC use tide-lookup.py</p>
+<p>For more extensive output for a specific IOC use tide-lookup.py</p>
 </dd>
-<dt>Requirements:</dt>
-<dd>Requires ibtidelib, requests, tqdm</dd>
-<dt>Usage:</dt>
-<dd><dl class="first last docutils">
-<dt>simple_tide_report.py [options] &lt;query&gt;</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd><span class="option">-h</span></kbd></td>
-<td>help</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-i</span></kbd></td>
-<td>&lt;file&gt; Input file (one IOC per line)</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-o</span></kbd></td>
-<td>&lt;file&gt; CSV Output file for results</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-b</span></kbd></td>
-<td>&lt;file&gt; File for reporting of bogus lines</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-k</span></kbd></td>
-<td>&lt;key&gt; TIDE apikey</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-a</span></kbd></td>
-<td>active threats only</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-l</span></kbd></td>
-<td>local database (activeonly)</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-d</span></kbd></td>
-<td>debug output</td></tr>
-</tbody>
-</table>
+<dt>Requirements:</dt><dd><p>Requires bloxone, tqdm</p>
+</dd>
+<dt>Usage:</dt><dd><dl>
+<dt>simple_tide_report.py [options] &lt;query&gt;</dt><dd><dl class="option-list">
+<dt><kbd><span class="option">-h</span></kbd></dt>
+<dd><p>help</p>
+</dd>
+<dt><kbd><span class="option">-c</span></kbd></dt>
+<dd><p>&lt;file&gt; inifile location (default ./config.ini)</p>
+</dd>
+<dt><kbd><span class="option">-i</span></kbd></dt>
+<dd><p>&lt;file&gt; Input file (one IOC per line)</p>
+</dd>
+<dt><kbd><span class="option">-o</span></kbd></dt>
+<dd><p>&lt;file&gt; CSV Output file for results</p>
+</dd>
+<dt><kbd><span class="option">-b</span></kbd></dt>
+<dd><p>&lt;file&gt; File for reporting of bogus lines</p>
+</dd>
+<dt><kbd><span class="option">-a</span></kbd></dt>
+<dd><p>active threats only</p>
+</dd>
+<dt><kbd><span class="option">-l</span></kbd></dt>
+<dd><p>local database (activeonly)</p>
+</dd>
+<dt><kbd><span class="option">-d</span></kbd></dt>
+<dd><p>debug output</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
 </dl>
 <p>Author: Chris Marrison</p>
-<p>Date Last Updated: 20190510</p>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<ul class="last simple">
-<li>Config file</li>
-<li>Option to treat URLs as hostnames i.e. parse URL to extract host</li>
-<li>Considering adding option to do DNS lookup on hosts and TIDE lookups
-on returned CNAMEs and IPs, however, may need different data structure</li>
+<p>Date Last Updated: 20211004</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Option to treat URLs as hostnames i.e. parse URL to extract host</p></li>
+<li><p>Considering adding option to do DNS lookup on hosts and TIDE lookups
+on returned CNAMEs and IPs, however, may need different data structure</p></li>
 </ul>
 </div>
 </div></blockquote>
@@ -241,266 +244,215 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.</p>
 <hr class="docutils" />
-<dl class="function">
-<dt id="simple_tide_report.checkactive">
-<code class="descclassname">simple_tide_report.</code><code class="descname">checkactive</code><span class="sig-paren">(</span><em>query</em>, <em>qtype</em>, <em>apikey</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#checkactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.checkactive" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.checkactive">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">checkactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b1td</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#checkactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.checkactive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check for active threat intel, parse and output results</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>query</strong> (<em>str</em>) – hostname, ip, or url</li>
-<li><strong>qtype</strong> (<em>str</em>) – query type (host, ip, url)</li>
-<li><strong>apikey</strong> (<em>str</em>) – TIDE API key</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – hostname, ip, or url</p></li>
+<li><p><strong>qtype</strong> (<em>str</em>) – query type (host, ip, url)</p></li>
+<li><p><strong>b1td</strong> (<em>obj</em>) – Instantiated bloxone.b1td class</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">number of active threats Found
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>number of active threats Found
 profiles (list): TIDE Profiles
 tclasses (list): List of threat classes</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">totalthreats (int)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>totalthreats (int)</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.checkoffline">
-<code class="descclassname">simple_tide_report.</code><code class="descname">checkoffline</code><span class="sig-paren">(</span><em>query</em>, <em>qtype</em>, <em>db_cursor</em>, <em>db_table</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#checkoffline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.checkoffline" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.checkoffline">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">checkoffline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#checkoffline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.checkoffline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check for active threat intel using local database</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>query</strong> (<em>str</em>) – hostname, ip, or url</li>
-<li><strong>qtype</strong> (<em>str</em>) – query type (host, ip, url)</li>
-<li><strong>db_cursor</strong> (<em>db.cursor</em>) – database cursor</li>
-<li><strong>db_table</strong> (<em>db.table</em>) – database table</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – hostname, ip, or url</p></li>
+<li><p><strong>qtype</strong> (<em>str</em>) – query type (host, ip, url)</p></li>
+<li><p><strong>db_cursor</strong> (<em>db.cursor</em>) – database cursor</p></li>
+<li><p><strong>db_table</strong> (<em>db.table</em>) – database table</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">number of active threats Found
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>number of active threats Found
 profiles (list): TIDE Profiles
 tclasses (list): List of threat classes</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">totalthreats (int)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>totalthreats (int)</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.checktide">
-<code class="descclassname">simple_tide_report.</code><code class="descname">checktide</code><span class="sig-paren">(</span><em>query</em>, <em>qtype</em>, <em>apikey</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#checktide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.checktide" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.checktide">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">checktide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b1td</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#checktide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.checktide" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check against all threat intel data, parse and output results</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>query</strong> (<em>str</em>) – hostname, ip, or url</li>
-<li><strong>qtype</strong> (<em>str</em>) – query type (host, ip, url)</li>
-<li><strong>apikey</strong> (<em>str</em>) – TIDE API key</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – hostname, ip, or url</p></li>
+<li><p><strong>qtype</strong> (<em>str</em>) – query type (host, ip, url)</p></li>
+<li><p><strong>b1td</strong> (<em>obj</em>) – Instantiated bloxone.b1td class</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">number of active threats Found
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>number of active threats Found
 profiles (list): TIDE Profiles
 tclasses (list): List of threat classes
 last_available (datetime): Most recent ‘available’ date if available
 last_expiration (datetime): Most recent ‘expiration’ date if available</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">totalthreats (int)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>totalthreats (int)</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.gen_report">
-<code class="descclassname">simple_tide_report.</code><code class="descname">gen_report</code><span class="sig-paren">(</span><em>activethreats</em>, <em>totalthreats</em>, <em>filehandle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#gen_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.gen_report" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.gen_report">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">gen_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activethreats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">totalthreats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filehandle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#gen_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.gen_report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate Threat Report</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>activethreats</strong> (<em>dict</em>) – Dictionary of active threat query data</li>
-<li><strong>totalthreats</strong> (<em>dict</em>) – Dictionary of all threat query data</li>
-<li><strong>filehandle</strong> (<em>fh</em><em> or </em><em>None</em>) – file handler or None</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>activethreats</strong> (<em>dict</em>) – Dictionary of active threat query data</p></li>
+<li><p><strong>totalthreats</strong> (<em>dict</em>) – Dictionary of all threat query data</p></li>
+<li><p><strong>filehandle</strong> (<em>fh</em><em> or </em><em>None</em>) – file handler or None</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Report to STDOUT and/or file
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Report to STDOUT and/or file
 No return data</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.getkeys">
-<code class="descclassname">simple_tide_report.</code><code class="descname">getkeys</code><span class="sig-paren">(</span><em>cc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#getkeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.getkeys" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.getkeys">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">getkeys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#getkeys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.getkeys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get keys from collections.Counter object</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cc</strong> – collection.counter object</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of keys in counter</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">keys</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cc</strong> – collection.counter object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of keys in counter</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>keys</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.main">
-<code class="descclassname">simple_tide_report.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.main" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.main">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.main" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Main *</li>
+<li><p>Main *</p></li>
 </ul>
 <p>Core logic when running as script</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.most_recent">
-<code class="descclassname">simple_tide_report.</code><code class="descname">most_recent</code><span class="sig-paren">(</span><em>t1</em>, <em>t2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#most_recent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.most_recent" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.most_recent">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">most_recent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#most_recent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.most_recent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare two datetime stamps and return most recent</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>t1</strong> – timestamp</li>
-<li><strong>t2</strong> – timestamp</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t1</strong> – timestamp</p></li>
+<li><p><strong>t2</strong> – timestamp</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">most recent timestamp from t1,t2.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">mostrecent</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>most recent timestamp from t1,t2.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>mostrecent</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.open_file">
-<code class="descclassname">simple_tide_report.</code><code class="descname">open_file</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#open_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.open_file" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.open_file">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">open_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#open_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.open_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempt to open output file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – Name of file to open.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">file handler object.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Name of file to open.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>file handler object.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.output_bogus">
-<code class="descclassname">simple_tide_report.</code><code class="descname">output_bogus</code><span class="sig-paren">(</span><em>data</em>, <em>file</em>, <em>line_number</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#output_bogus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.output_bogus" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.output_bogus">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">output_bogus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#output_bogus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.output_bogus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write invalid data to file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>str</em>) – data to Write</li>
-<li><strong>file</strong> (<em>filehandle</em>) – file handler</li>
-<li><strong>line_number</strong> (<em>int</em>) – bogus line number</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em>) – data to Write</p></li>
+<li><p><strong>file</strong> (<em>filehandle</em>) – file handler</p></li>
+<li><p><strong>line_number</strong> (<em>int</em>) – bogus line number</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">no data.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>no data.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.output_counter">
-<code class="descclassname">simple_tide_report.</code><code class="descname">output_counter</code><span class="sig-paren">(</span><em>cc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#output_counter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.output_counter" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.output_counter">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">output_counter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#output_counter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.output_counter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output all entries in a counter by value</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>is a collection.Counter</strong><strong>(</strong><strong>) </strong><strong>obj.</strong> (<em>cc</em>) – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">No data.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>is a collection.Counter</strong><strong>(</strong><strong>) </strong><strong>obj.</strong> (<em>cc</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>No data.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.parseargs">
-<code class="descclassname">simple_tide_report.</code><code class="descname">parseargs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#parseargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.parseargs" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.parseargs">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">parseargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#parseargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.parseargs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse Arguments Using argparse</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>None</strong> – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns parsed arguments</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns parsed arguments</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="simple_tide_report.read_config">
-<code class="descclassname">simple_tide_report.</code><code class="descname">read_config</code><span class="sig-paren">(</span><em>cfg_filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#read_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.read_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Open and parse ini file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cfg_filename</strong> (<em>str</em>) – name of inifile</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">API Key for authentication</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">api_key (str)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="simple_tide_report.setup_logging">
-<code class="descclassname">simple_tide_report.</code><code class="descname">setup_logging</code><span class="sig-paren">(</span><em>debug</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#setup_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simple_tide_report.setup_logging" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="simple_tide_report.setup_logging">
+<span class="sig-prename descclassname"><span class="pre">simple_tide_report.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">debug</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simple_tide_report.html#setup_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simple_tide_report.setup_logging" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up logging</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>debug</strong> (<em>bool</em>) – True or False.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em>) – True or False.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -510,29 +462,29 @@ No return data</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="version_history.html" class="btn btn-neutral float-right" title="ChangeLog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="user_guide.html" class="btn btn-neutral" title="User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="version_history.html" class="btn btn-neutral float-right" title="ChangeLog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user_guide.html" class="btn btn-neutral float-left" title="User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Chris Marrison
+        &#169; Copyright 2019, Chris Marrison.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -541,27 +493,16 @@ No return data</p>
   </div>
   
 
-
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
