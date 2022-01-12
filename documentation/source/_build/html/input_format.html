@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Input File Format &mdash; Simple TIDE Report 2.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start Guide" href="quickstart.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Simple TIDE Report
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Input File Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-input-file">Example Input File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#potential-sources-of-input-data">Potential Sources of Input Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extracting-host-info-from-urls">Extracting Host Info from URLs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-packet-captures-to-create-input-files">Using Packet Captures to Create Input Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-dns-query-logs-to-create-input-files">Using DNS Query Logs to Create Input Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Source Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version_history.html">ChangeLog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Simple TIDE Report</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Input File Format</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/input_format.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="input-file-format">
+<h1>Input File Format<a class="headerlink" href="#input-file-format" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="code.html#module-simple_tide_report" title="simple_tide_report"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simple_tide_report</span></code></a> is designed for performning lookups on ‘bulk’ sets of
+data. Tests can be performed against any of the three IOC types that are
+recognised by TIDE. i.e. hosts, IPs and URLs.</p>
+<p>The file format used by <a class="reference internal" href="code.html#module-simple_tide_report" title="simple_tide_report"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simple_tide_report</span></code></a> is therefore simply a one query per
+line where each line contains either a hostname, IP address or URL. Files can
+contain data of a single data type or multiple data types as the script automatically determines the data type and uses this for the TIDE query.</p>
+<div class="section" id="example-input-file">
+<h2>Example Input File<a class="headerlink" href="#example-input-file" title="Permalink to this headline">¶</a></h2>
+<p>A simple mixed data type input file is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">www</span><span class="o">.</span><span class="n">google</span><span class="o">.</span><span class="n">com</span>
+<span class="n">eicar</span><span class="o">.</span><span class="n">co</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">t7rminal</span><span class="o">.</span><span class="n">space</span><span class="o">/</span>
+<span class="mf">1.1</span><span class="o">.</span><span class="mf">1.1</span>
+<span class="n">info</span><span class="o">.</span><span class="n">spiritsoft</span><span class="o">.</span><span class="n">cn</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If the customer provides or is using URL data for testing purposes it is important to note that currently these will only perform a type URL query against TIDE. This means that you may potentially miss threat intel data. It is therefore advised to extract the host component from the URLs and use this as input to the script. For tips on how to do this please see section on <a class="reference internal" href="#host-from-url"><span class="std std-ref">Extracting Host Info from URLs</span></a> (Please also see the TODO <a class="reference internal" href="#todo1"><span class="std std-ref">below</span></a>.)</p>
+</div>
+<div class="admonition-todo admonition" id="id1">
+<span id="todo1"></span><p class="admonition-title">Todo</p>
+<p>Add script option to take URLs and extract the ‘host’ (hostname or IP) and process as the appropriate data type.</p>
+</div>
+</div>
+<div class="section" id="potential-sources-of-input-data">
+<h2>Potential Sources of Input Data<a class="headerlink" href="#potential-sources-of-input-data" title="Permalink to this headline">¶</a></h2>
+<p>Although the customer may already have lists of domains, urls and IPs that they wish to use for testing purposes, it may be that some processing of this data is required before you parsing with the script. You may also find yourself in the position that you are performing a PoC where existing network traffic is used to provide test data. This may be in the form of packet captures or logfiles.</p>
+<p>Below are some examples that can help build an input file for the PoC from alternate sources.</p>
+</div>
+<div class="section" id="extracting-host-info-from-urls">
+<span id="host-from-url"></span><h2>Extracting Host Info from URLs<a class="headerlink" href="#extracting-host-info-from-urls" title="Permalink to this headline">¶</a></h2>
+<p>The simplest form is taking a list of URLs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">google</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">scevanchurch</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">cor</span><span class="o">.</span><span class="n">scin</span><span class="o">/</span><span class="n">sc</span><span class="o">.</span><span class="n">php</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">geeflyco</span><span class="o">.</span><span class="n">com</span><span class="o">//</span><span class="n">paper</span><span class="o">.</span><span class="n">files</span><span class="o">/</span><span class="n">imagespaper</span><span class="o">/</span><span class="n">login</span><span class="o">.</span><span class="n">php</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">kareniot</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cor</span><span class="o">.</span><span class="n">scin</span><span class="o">/</span><span class="n">sc</span><span class="o">.</span><span class="n">php</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mindnetig</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cor</span><span class="o">.</span><span class="n">scin</span><span class="o">/</span><span class="n">sc</span><span class="o">.</span><span class="n">php</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">dhal3</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">images</span><span class="o">/</span><span class="n">nab</span><span class="o">/</span><span class="n">cardinfo</span><span class="o">.</span><span class="n">htm</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">bogushost</span><span class="o">.</span><span class="n">net</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">content</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">html</span>
+</pre></div>
+</div>
+<p>There are several simple ways to extract the host information, ranging from importing in to Excel and splitting the data based on forward slashes. However, it is also simple to do this assuming that they are in a simple text file on the command line.</p>
+<p>In its simplest form with a simple list as above you can use the cut command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cut</span> <span class="o">-</span><span class="n">d</span>\<span class="o">/</span> <span class="o">-</span><span class="n">f3</span> <span class="n">urllist</span><span class="o">.</span><span class="n">txt</span> <span class="o">&gt;</span> <span class="n">host_extract</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>However, if the URLs contain port numbers, as with the above example, you may would need to perform an additional cut using -d: -f1 to remove these. This can easily be achieved with a single command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cut</span> <span class="o">-</span><span class="n">d</span>\<span class="o">/</span> <span class="o">-</span><span class="n">f3</span> <span class="n">urllist</span><span class="o">.</span><span class="n">txt</span> <span class="o">|</span> <span class="n">cut</span> <span class="o">-</span><span class="n">d</span><span class="p">:</span> <span class="o">-</span><span class="n">f1</span> <span class="o">&gt;</span> <span class="n">host_extract</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-packet-captures-to-create-input-files">
+<h2>Using Packet Captures to Create Input Files<a class="headerlink" href="#using-packet-captures-to-create-input-files" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>tshark -r capture.pcap -n -T fields -e dns.qry.name | sort -n | uniq &gt; hosts.txt</p>
+</div>
+</div>
+<div class="section" id="using-dns-query-logs-to-create-input-files">
+<h2>Using DNS Query Logs to Create Input Files<a class="headerlink" href="#using-dns-query-logs-to-create-input-files" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>awk ‘{print $9}’ logfile | sort -n | uniq &gt; hosts.txt</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="Quick Start Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Chris Marrison
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

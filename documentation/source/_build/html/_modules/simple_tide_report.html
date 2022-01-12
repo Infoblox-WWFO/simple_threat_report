@@ -1,0 +1,964 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>simple_tide_report &mdash; Simple TIDE Report 2.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Simple TIDE Report
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../input_format.html">Input File Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Source Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version_history.html">ChangeLog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Simple TIDE Report</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>simple_tide_report</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for simple_tide_report</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+
+<span class="sd"> Description:</span>
+<span class="sd">  Lookup query against TIDE active state and historic data</span>
+<span class="sd">  producing basic report on whether there is active/historical</span>
+<span class="sd">  data with simplified report output.</span>
+
+<span class="sd">  For more extensive output for a specific IOC use tide-lookup.py</span>
+
+<span class="sd"> Requirements:</span>
+<span class="sd">  Requires ibtidelib, requests, tqdm</span>
+
+<span class="sd"> Usage:</span>
+<span class="sd">    simple_tide_report.py [options] &lt;query&gt;</span>
+<span class="sd">        -h  help</span>
+<span class="sd">        -c  &lt;file&gt; inifile location (default ./config.ini)</span>
+<span class="sd">        -i  &lt;file&gt; Input file (one IOC per line)</span>
+<span class="sd">        -o  &lt;file&gt; CSV Output file for results</span>
+<span class="sd">        -b  &lt;file&gt; File for reporting of bogus lines</span>
+<span class="sd">        -k  &lt;key&gt; TIDE apikey</span>
+<span class="sd">        -a  active threats only</span>
+<span class="sd">        -l  local database (activeonly)</span>
+<span class="sd">        -d  debug output</span>
+
+<span class="sd"> Author: Chris Marrison</span>
+
+<span class="sd"> Date Last Updated: 20190626</span>
+
+<span class="sd"> .. todo::</span>
+<span class="sd">    * Option to treat URLs as hostnames i.e. parse URL to extract host</span>
+<span class="sd">    * Considering adding option to do DNS lookup on hosts and TIDE lookups</span>
+<span class="sd">      on returned CNAMEs and IPs, however, may need different data structure</span>
+
+<span class="sd">Copyright 2019 Chris Marrison / Infoblox</span>
+
+<span class="sd">Redistribution and use in source and binary forms,</span>
+<span class="sd">with or without modification, are permitted provided</span>
+<span class="sd">that the following conditions are met:</span>
+
+<span class="sd">1. Redistributions of source code must retain the above copyright</span>
+<span class="sd">notice, this list of conditions and the following disclaimer.</span>
+
+<span class="sd">2. Redistributions in binary form must reproduce the above copyright</span>
+<span class="sd">notice, this list of conditions and the following disclaimer in the</span>
+<span class="sd">documentation and/or other materials provided with the distribution.</span>
+
+<span class="sd">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</span>
+<span class="sd">&quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</span>
+<span class="sd">LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS</span>
+<span class="sd">FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE</span>
+<span class="sd">COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,</span>
+<span class="sd">INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,</span>
+<span class="sd">BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="sd">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER</span>
+<span class="sd">CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT</span>
+<span class="sd">LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN</span>
+<span class="sd">ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+<span class="sd">POSSIBILITY OF SUCH DAMAGE.</span>
+
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;2.51&#39;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Chris Marrison&#39;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">tqdm</span>
+
+<span class="c1"># Add &#39;.&#39; to path if ios (Pythonista) to find ibtidelib</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;ios&#39;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">ibtidelib</span>
+
+<span class="c1"># ** Global Variables **</span>
+<span class="c1"># apikey = &#39;&#39;</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># ** Functions **</span>
+
+
+<div class="viewcode-block" id="read_config"><a class="viewcode-back" href="../code.html#simple_tide_report.read_config">[docs]</a><span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Open and parse ini file</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        cfg_filename (str): name of inifile</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        api_key (str): API Key for authentication</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+
+    <span class="c1"># Attempt to read api_key from ini file</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">configparser</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+    <span class="c1"># Look for TIDE section</span>
+    <span class="k">if</span> <span class="s1">&#39;TIDE&#39;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+        <span class="c1"># Check for api_key in TIDE section</span>
+        <span class="k">if</span> <span class="s1">&#39;api_key&#39;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;TIDE&#39;</span><span class="p">]:</span>
+            <span class="n">api_key</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;TIDE&#39;</span><span class="p">][</span><span class="s1">&#39;api_key&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;API Key Found in </span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">,</span> <span class="n">api_key</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No API key (api_key) variable in section TIDE.&#39;</span><span class="p">)</span>
+            <span class="n">api_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No TIDE Section in config file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">))</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">api_key</span></div>
+
+
+<div class="viewcode-block" id="parseargs"><a class="viewcode-back" href="../code.html#simple_tide_report.parseargs">[docs]</a><span class="k">def</span> <span class="nf">parseargs</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parse Arguments Using argparse</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Returns parsed arguments</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">parse</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;TIDE reporting tool with &#39;</span>
+                                    <span class="s1">&#39;simplified CSV output and statistics&#39;</span><span class="p">)</span>
+    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;--input&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Input filename&quot;</span><span class="p">)</span>
+    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--output&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;CSV Output to &lt;filename&gt;&quot;</span><span class="p">)</span>
+    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="s1">&#39;--bogus&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output invalid lines to file&quot;</span><span class="p">)</span>
+    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;config.ini&#39;</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Overide Config file&quot;</span><span class="p">)</span>
+    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="s1">&#39;--apikey&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Overide API Key&quot;</span><span class="p">)</span>
+    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;--active&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Process active only&quot;</span><span class="p">)</span>
+    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-l&#39;</span><span class="p">,</span> <span class="s1">&#39;--local&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use local database &lt;filename&gt;&quot;</span><span class="p">)</span>
+    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--debug&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable debug messages&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parse</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="setup_logging"><a class="viewcode-back" href="../code.html#simple_tide_report.setup_logging">[docs]</a><span class="k">def</span> <span class="nf">setup_logging</span><span class="p">(</span><span class="n">debug</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">     Set up logging</span>
+
+<span class="sd">     Parameters:</span>
+<span class="sd">        debug (bool): True or False.</span>
+
+<span class="sd">     Returns:</span>
+<span class="sd">        None.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Set debug level</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                            <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+                            <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Create logger and add Console handler</span>
+    <span class="c1"># log = logging.getLogger(__name__)</span>
+    <span class="c1"># log.addHandler(fileh)</span>
+    <span class="c1"># log.addHandler(console)</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="open_file"><a class="viewcode-back" href="../code.html#simple_tide_report.open_file">[docs]</a><span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">     Attempt to open output file</span>
+
+<span class="sd">     Parameters:</span>
+<span class="sd">        filename (str): Name of file to open.</span>
+
+<span class="sd">     Returns:</span>
+<span class="sd">        file handler object.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="n">backup</span> <span class="o">=</span> <span class="n">filename</span><span class="o">+</span><span class="s2">&quot;.bak&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">backup</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Outfile exists moved to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backup</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">handler</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully opened output file </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+                <span class="n">handler</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not backup existing file </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully opened output file </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">handler</span></div>
+
+
+<div class="viewcode-block" id="output_bogus"><a class="viewcode-back" href="../code.html#simple_tide_report.output_bogus">[docs]</a><span class="k">def</span> <span class="nf">output_bogus</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">line_number</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Write invalid data to file</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        data (str): data to Write</span>
+<span class="sd">        file (filehandle): file handler</span>
+<span class="sd">        line_number (int): bogus line number</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        no data.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">line_number</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;:   &quot;</span><span class="o">+</span><span class="n">data</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="output_counter"><a class="viewcode-back" href="../code.html#simple_tide_report.output_counter">[docs]</a><span class="k">def</span> <span class="nf">output_counter</span><span class="p">(</span><span class="n">cc</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Output all entries in a counter by value</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        cc is a collection.Counter() obj.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        No data.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cc</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="getkeys"><a class="viewcode-back" href="../code.html#simple_tide_report.getkeys">[docs]</a><span class="k">def</span> <span class="nf">getkeys</span><span class="p">(</span><span class="n">cc</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get keys from collections.Counter object</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        cc: collection.counter object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        keys: List of keys in counter</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">cc</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">keys</span></div>
+
+
+<div class="viewcode-block" id="most_recent"><a class="viewcode-back" href="../code.html#simple_tide_report.most_recent">[docs]</a><span class="k">def</span> <span class="nf">most_recent</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Compare two datetime stamps and return most recent</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        t1: timestamp</span>
+<span class="sd">        t2: timestamp</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mostrecent: most recent timestamp from t1,t2.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">t1</span> <span class="o">&gt;</span> <span class="n">t2</span><span class="p">:</span>
+        <span class="n">mostrecent</span> <span class="o">=</span> <span class="n">t1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mostrecent</span> <span class="o">=</span> <span class="n">t2</span>
+    <span class="k">return</span> <span class="n">mostrecent</span></div>
+
+
+<div class="viewcode-block" id="checkactive"><a class="viewcode-back" href="../code.html#simple_tide_report.checkactive">[docs]</a><span class="k">def</span> <span class="nf">checkactive</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">apikey</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Check for active threat intel, parse and output results</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        query (str): hostname, ip, or url</span>
+<span class="sd">        qtype (str): query type (host, ip, url)</span>
+<span class="sd">        apikey (str): TIDE API key</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        totalthreats (int): number of active threats Found</span>
+<span class="sd">        profiles (list): TIDE Profiles</span>
+<span class="sd">        tclasses (list): List of threat classes</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Set up local counters</span>
+    <span class="n">totalthreats</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">profile_stats</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="n">class_stats</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="c1"># threat_types = collections.Counter()</span>
+    <span class="c1"># property_stats = collections.Counter()</span>
+    <span class="n">profiles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tclasses</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Query active TIDE data</span>
+    <span class="n">rcode</span><span class="p">,</span> <span class="n">rtext</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">querytidestate</span><span class="p">(</span><span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">apikey</span><span class="p">)</span>
+    <span class="c1"># Process Response</span>
+    <span class="k">if</span> <span class="n">rcode</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="c1"># Parse json</span>
+        <span class="n">parsed_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rtext</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Quey: </span><span class="si">{}</span><span class="s1">, Query type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Raw response: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rtext</span><span class="p">))</span>
+
+        <span class="c1"># Parse Results</span>
+        <span class="c1"># Check for threat construct</span>
+        <span class="k">if</span> <span class="s2">&quot;threat&quot;</span> <span class="ow">in</span> <span class="n">parsed_json</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">threat</span> <span class="ow">in</span> <span class="n">parsed_json</span><span class="p">[</span><span class="s1">&#39;threat&#39;</span><span class="p">]:</span>
+                <span class="c1"># Collect stats</span>
+                <span class="n">totalthreats</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">profile_stats</span><span class="p">[</span><span class="n">threat</span><span class="p">[</span><span class="s1">&#39;profile&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">class_stats</span><span class="p">[</span><span class="n">threat</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># threat_types[threat[&#39;type&#39;]] += 1</span>
+                <span class="c1"># property_stats[threat[&#39;property&#39;]] += 1</span>
+
+            <span class="c1"># Generate basic output</span>
+            <span class="n">profiles</span> <span class="o">=</span> <span class="n">getkeys</span><span class="p">(</span><span class="n">profile_stats</span><span class="p">)</span>
+            <span class="n">tclasses</span> <span class="o">=</span> <span class="n">getkeys</span><span class="p">(</span><span class="n">class_stats</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1"> active threat(s) </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">totalthreats</span><span class="p">,</span>
+                                                          <span class="n">profiles</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">, No active threats found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Query Failed with response: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcode</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Body response: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rtext</span><span class="p">))</span>
+        <span class="n">totalthreats</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">profiles</span> <span class="o">=</span> <span class="s2">&quot;API Exception Occurred&quot;</span>
+
+    <span class="k">return</span> <span class="n">totalthreats</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">tclasses</span></div>
+
+
+<div class="viewcode-block" id="checktide"><a class="viewcode-back" href="../code.html#simple_tide_report.checktide">[docs]</a><span class="k">def</span> <span class="nf">checktide</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">apikey</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Check against all threat intel data, parse and output results</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        query (str): hostname, ip, or url</span>
+<span class="sd">        qtype (str): query type (host, ip, url)</span>
+<span class="sd">        apikey (str): TIDE API key</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        totalthreats (int): number of active threats Found</span>
+<span class="sd">        profiles (list): TIDE Profiles</span>
+<span class="sd">        tclasses (list): List of threat classes</span>
+<span class="sd">        last_available (datetime): Most recent &#39;available&#39; date if available</span>
+<span class="sd">        last_expiration (datetime): Most recent &#39;expiration&#39; date if available</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Set up local counters</span>
+    <span class="n">totalthreats</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">profile_stats</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="n">class_stats</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="n">last_available</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">last_expiration</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># threat_types = collections.Counter()</span>
+    <span class="c1"># property_stats = collections.Counter()</span>
+    <span class="n">profiles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tclasses</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Query TIDE (complete)</span>
+    <span class="n">rcode</span><span class="p">,</span> <span class="n">rtext</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">querytide</span><span class="p">(</span><span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">apikey</span><span class="p">)</span>
+
+    <span class="c1"># Process response</span>
+    <span class="k">if</span> <span class="n">rcode</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+
+        <span class="c1"># Parse json</span>
+        <span class="n">parsed_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rtext</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Quey: </span><span class="si">{}</span><span class="s1">, Query type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Raw response: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rtext</span><span class="p">))</span>
+
+        <span class="c1"># Check for threat construct</span>
+        <span class="k">if</span> <span class="s2">&quot;threat&quot;</span> <span class="ow">in</span> <span class="n">parsed_json</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">threat</span> <span class="ow">in</span> <span class="n">parsed_json</span><span class="p">[</span><span class="s1">&#39;threat&#39;</span><span class="p">]:</span>
+                <span class="c1"># Collect stats</span>
+                <span class="n">totalthreats</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">profile_stats</span><span class="p">[</span><span class="n">threat</span><span class="p">[</span><span class="s1">&#39;profile&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">class_stats</span><span class="p">[</span><span class="n">threat</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># threat_types[threat[&#39;type&#39;]] += 1</span>
+                <span class="c1"># property_stats[threat[&#39;property&#39;]] += 1</span>
+
+                <span class="c1"># Collect available/expiration dates, determine most recent</span>
+                <span class="n">available</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">threat</span><span class="p">[</span><span class="s1">&#39;imported&#39;</span><span class="p">],</span>
+                                                       <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
+                <span class="n">last_available</span> <span class="o">=</span> <span class="n">most_recent</span><span class="p">(</span><span class="n">last_available</span><span class="p">,</span> <span class="n">available</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;expiration&quot;</span> <span class="ow">in</span> <span class="n">threat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">expiration</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                        <span class="n">threat</span><span class="p">[</span><span class="s1">&#39;expiration&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
+                    <span class="n">last_expiration</span> <span class="o">=</span> <span class="n">most_recent</span><span class="p">(</span><span class="n">last_expiration</span><span class="p">,</span> <span class="n">expiration</span><span class="p">)</span>
+
+            <span class="c1"># Add basic output</span>
+            <span class="n">profiles</span> <span class="o">=</span> <span class="n">getkeys</span><span class="p">(</span><span class="n">profile_stats</span><span class="p">)</span>
+            <span class="n">tclasses</span> <span class="o">=</span> <span class="n">getkeys</span><span class="p">(</span><span class="n">class_stats</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1"> total item(s) of threat intel </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">totalthreats</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">tclasses</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">, No threat intel found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Query Failed with response: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcode</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Body response: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rtext</span><span class="p">))</span>
+        <span class="n">totalthreats</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">profiles</span> <span class="o">=</span> <span class="s2">&quot;API Exception Occurred&quot;</span>
+
+    <span class="c1"># Check whether dates were updated</span>
+    <span class="k">if</span> <span class="n">last_available</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">last_available</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">last_expiration</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">last_expiration</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">totalthreats</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">tclasses</span><span class="p">,</span> <span class="n">last_available</span><span class="p">,</span> <span class="n">last_expiration</span></div>
+
+
+<div class="viewcode-block" id="checkoffline"><a class="viewcode-back" href="../code.html#simple_tide_report.checkoffline">[docs]</a><span class="k">def</span> <span class="nf">checkoffline</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">db_cursor</span><span class="p">,</span> <span class="n">db_table</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">     Check for active threat intel using local database</span>
+
+<span class="sd">     Parameters:</span>
+<span class="sd">        query (str): hostname, ip, or url</span>
+<span class="sd">        qtype (str): query type (host, ip, url)</span>
+<span class="sd">        db_cursor (db.cursor): database cursor</span>
+<span class="sd">        db_table (db.table): database table</span>
+
+<span class="sd">     Returns:</span>
+<span class="sd">        totalthreats (int): number of active threats Found</span>
+<span class="sd">        profiles (list): TIDE Profiles</span>
+<span class="sd">        tclasses (list): List of threat classes</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Set up local counters</span>
+    <span class="n">totalthreats</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">profile_stats</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="n">class_stats</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="c1"># threat_types = collections.Counter()</span>
+    <span class="c1"># property_stats = collections.Counter()</span>
+    <span class="n">profiles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tclasses</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Query active TIDE data</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">db_query</span><span class="p">(</span><span class="n">db_cursor</span><span class="p">,</span> <span class="n">db_table</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+    <span class="c1"># Process Response</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Quey: </span><span class="si">{}</span><span class="s1">, Query type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">))</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Raw response: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rows</span><span class="p">))</span>
+
+    <span class="c1"># Parse Results</span>
+    <span class="c1"># Check for threat construct</span>
+    <span class="k">if</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="c1"># Collect stats</span>
+            <span class="n">totalthreats</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">profile_stats</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;profile&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">class_stats</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Generate basic output</span>
+        <span class="n">profiles</span> <span class="o">=</span> <span class="n">getkeys</span><span class="p">(</span><span class="n">profile_stats</span><span class="p">)</span>
+        <span class="n">tclasses</span> <span class="o">=</span> <span class="n">getkeys</span><span class="p">(</span><span class="n">class_stats</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1"> active threat(s) </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">totalthreats</span><span class="p">,</span>
+                                                      <span class="n">profiles</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">, No active threats found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">totalthreats</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">tclasses</span></div>
+
+
+<div class="viewcode-block" id="gen_report"><a class="viewcode-back" href="../code.html#simple_tide_report.gen_report">[docs]</a><span class="k">def</span> <span class="nf">gen_report</span><span class="p">(</span><span class="n">activethreats</span><span class="p">,</span> <span class="n">totalthreats</span><span class="p">,</span> <span class="n">filehandle</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generate Threat Report</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        activethreats (dict): Dictionary of active threat query data</span>
+<span class="sd">        totalthreats (dict): Dictionary of all threat query data</span>
+<span class="sd">        filehandle (fh or None): file handler or None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Report to STDOUT and/or file</span>
+<span class="sd">        No return data</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Local Variables</span>
+    <span class="n">total_hosts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">activethreats</span><span class="p">)</span>
+    <span class="n">with_active</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">with_threats</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Parse items and output</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">totalthreats</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Assert Active Only</span>
+        <span class="c1"># Check for CSV output</span>
+        <span class="k">if</span> <span class="n">filehandle</span><span class="p">:</span>
+            <span class="c1"># Write Header</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Host,Active Threats,Active Profiles,Active Classes&#39;</span><span class="p">,</span>
+                  <span class="n">file</span><span class="o">=</span><span class="n">filehandle</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">activethreats</span><span class="p">:</span>
+            <span class="c1"># Summarise Info</span>
+            <span class="c1"># total_hosts += 1</span>
+            <span class="k">if</span> <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">with_active</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Human Output</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Host: </span><span class="si">{}</span><span class="s1">, Active threats: </span><span class="si">{}</span><span class="s1">, Active profiles: </span><span class="si">{}</span><span class="s1">, &#39;</span>
+                  <span class="s1">&#39;Classes: </span><span class="si">{}</span><span class="s1">&#39;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+
+            <span class="c1"># File output</span>
+            <span class="k">if</span> <span class="n">filehandle</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">,&quot;</span><span class="si">{}</span><span class="s1">&quot;,&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                               <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                               <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span>
+                      <span class="n">file</span><span class="o">=</span><span class="n">filehandle</span><span class="p">)</span>
+
+        <span class="c1"># Add Summary</span>
+        <span class="c1"># Human</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Summary: Total = </span><span class="si">{}</span><span class="s1">, Active = </span><span class="si">{}</span><span class="s1">, Not active = </span><span class="si">{}</span><span class="s1">&#39;</span>
+              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_hosts</span><span class="p">,</span> <span class="n">with_active</span><span class="p">,</span> <span class="n">total_hosts</span> <span class="o">-</span> <span class="n">with_active</span><span class="p">))</span>
+        <span class="c1"># File</span>
+        <span class="k">if</span> <span class="n">filehandle</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Summary: Total = </span><span class="si">{}</span><span class="s1">, Active = </span><span class="si">{}</span><span class="s1">, Not active = </span><span class="si">{}</span><span class="s1">&#39;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_hosts</span><span class="p">,</span> <span class="n">with_active</span><span class="p">,</span> <span class="n">total_hosts</span> <span class="o">-</span> <span class="n">with_active</span><span class="p">),</span>
+                  <span class="n">file</span><span class="o">=</span><span class="n">filehandle</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Assert active and total threats</span>
+        <span class="c1"># Check for CSV output</span>
+        <span class="k">if</span> <span class="n">filehandle</span><span class="p">:</span>
+            <span class="c1"># Write Header</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Host,Active Threats,Active Profiles,Total Indicators, &#39;</span>
+                  <span class="s1">&#39;Indicator Profiles, Threat Classes,Last Seen,Last Expiry&#39;</span><span class="p">,</span>
+                  <span class="n">file</span><span class="o">=</span><span class="n">filehandle</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">activethreats</span><span class="p">:</span>
+            <span class="c1"># Summarise Info</span>
+            <span class="c1"># total_hosts += 1</span>
+            <span class="k">if</span> <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">with_active</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">with_threats</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Human Output</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Host: </span><span class="si">{}</span><span class="s1">, Active threats: </span><span class="si">{}</span><span class="s1">, Active profiles: </span><span class="si">{}</span><span class="s1">, &#39;</span>
+                  <span class="s1">&#39;Total threats: </span><span class="si">{}</span><span class="s1">, Profiles: </span><span class="si">{}</span><span class="s1">, Classes: </span><span class="si">{}</span><span class="s1">, &#39;</span>
+                  <span class="s1">&#39;Last seen: </span><span class="si">{}</span><span class="s1">, Last Expiry: </span><span class="si">{}</span><span class="s1">&#39;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                          <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">4</span><span class="p">]))</span>
+            <span class="c1"># File output</span>
+            <span class="k">if</span> <span class="n">filehandle</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">,&quot;</span><span class="si">{}</span><span class="s1">&quot;,</span><span class="si">{}</span><span class="s1">,&quot;</span><span class="si">{}</span><span class="s1">&quot;,&quot;</span><span class="si">{}</span><span class="s1">&quot;,</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">&#39;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="n">activethreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
+                              <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="n">totalthreats</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="mi">4</span><span class="p">]),</span>
+                      <span class="n">file</span><span class="o">=</span><span class="n">filehandle</span><span class="p">)</span>
+        <span class="c1"># Add Summary</span>
+        <span class="c1"># Human</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Summary: Total = </span><span class="si">{}</span><span class="s1">, Active = </span><span class="si">{}</span><span class="s1">, Threats = </span><span class="si">{}</span><span class="s1">, No info = </span><span class="si">{}</span><span class="s1">&#39;</span>
+              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_hosts</span><span class="p">,</span> <span class="n">with_active</span><span class="p">,</span> <span class="n">with_threats</span><span class="p">,</span>
+                      <span class="n">total_hosts</span> <span class="o">-</span> <span class="n">with_threats</span><span class="p">))</span>
+        <span class="c1"># File</span>
+        <span class="k">if</span> <span class="n">filehandle</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Summary: Total = </span><span class="si">{}</span><span class="s1">, Active = </span><span class="si">{}</span><span class="s1">, Threats = </span><span class="si">{}</span><span class="s1">, &#39;</span>
+                  <span class="s1">&#39;No info = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_hosts</span><span class="p">,</span> <span class="n">with_active</span><span class="p">,</span> <span class="n">with_threats</span><span class="p">,</span>
+                                        <span class="n">total_hosts</span> <span class="o">-</span> <span class="n">with_threats</span><span class="p">),</span>
+                  <span class="n">file</span><span class="o">=</span><span class="n">filehandle</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">filehandle</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CSV output written to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filehandle</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../code.html#simple_tide_report.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    * Main *</span>
+
+<span class="sd">    Core logic when running as script</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#global apikey</span>
+
+    <span class="c1"># Local Variables</span>
+    <span class="n">exitcode</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">activethreats</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">totalthreats</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># threats = 0</span>
+    <span class="n">linecount</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total_lines</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">bogus_lines</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># profiles = &#39;&#39;</span>
+
+    <span class="c1"># Parse Arguments and configure</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parseargs</span><span class="p">()</span>
+
+    <span class="c1"># Set up logging</span>
+    <span class="n">debug</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span>
+    <span class="n">setup_logging</span><span class="p">(</span><span class="n">debug</span><span class="p">)</span>
+
+    <span class="c1"># File Options</span>
+    <span class="n">bogusfilename</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">bogus</span>
+    <span class="n">inputfile</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input</span>
+    <span class="n">outputfile</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+        <span class="n">configfile</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">configfile</span> <span class="o">=</span> <span class="s1">&#39;config.ini&#39;</span>
+
+    <span class="c1"># Set API Key</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">apikey</span><span class="p">:</span>
+        <span class="n">apikey</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">apikey</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">apikey</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">apikey</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;API Key not set.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># General Options</span>
+    <span class="n">activeonly</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">active</span>
+
+    <span class="c1"># Local database option</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">local</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">local</span>
+        <span class="c1"># Force activeonly</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Forcing check for active threats only.&#39;</span><span class="p">)</span>
+        <span class="n">activeonly</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Opening local database </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">database</span><span class="p">))</span>
+        <span class="n">db_cursor</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">opendb</span><span class="p">(</span><span class="n">database</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">db_cursor</span><span class="p">:</span>
+            <span class="n">db_table</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="n">db_cursor</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">db_table</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Local database table error, exiting.&#39;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using local database for active lookups.&#39;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Database opened successfully.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Local database error, exiting.&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Set up output file for bogus lines</span>
+    <span class="k">if</span> <span class="n">bogusfilename</span><span class="p">:</span>
+        <span class="n">bogus_out</span> <span class="o">=</span> <span class="n">open_file</span><span class="p">(</span><span class="n">bogusfilename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bogus_out</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Failed to open output file for bogus lines.&#39;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bogus_out</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Set up output file for CSV</span>
+    <span class="k">if</span> <span class="n">outputfile</span><span class="p">:</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="n">open_file</span><span class="p">(</span><span class="n">outputfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Failed to open output file for CSV. Outputting to stdout only.&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Build regexes for data_type checking</span>
+    <span class="n">host_regex</span><span class="p">,</span> <span class="n">url_regex</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">buildregex</span><span class="p">()</span>
+
+    <span class="c1"># Check for input file and attempt to read</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Attempting to open input file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inputfile</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Open input file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Determine number of lines</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">total_lines</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># Return to start of file</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> opened, with </span><span class="si">{}</span><span class="s1"> lines&#39;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inputfile</span><span class="p">,</span> <span class="n">total_lines</span><span class="p">))</span>
+
+            <span class="c1"># Process file</span>
+            <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">total_lines</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                    <span class="n">query</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+                    <span class="n">linecount</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="c1"># Update progress bar</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+                    <span class="c1"># Get data type for query</span>
+                    <span class="n">qtype</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">data_type</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">host_regex</span><span class="p">,</span> <span class="n">url_regex</span><span class="p">)</span>
+
+                    <span class="c1"># Check qtype and log bogus lines</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Query: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Data type of query: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">qtype</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="n">qtype</span> <span class="o">!=</span> <span class="s2">&quot;invalid&quot;</span><span class="p">:</span>
+                        <span class="c1"># Determine TIDE or Local db</span>
+                        <span class="k">if</span> <span class="n">database</span><span class="p">:</span>
+                            <span class="c1"># Use local database</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Querying local database.&quot;</span><span class="p">)</span>
+                            <span class="n">activethreats</span><span class="p">[</span><span class="n">query</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkoffline</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
+                                                                <span class="n">qtype</span><span class="p">,</span>
+                                                                <span class="n">db_cursor</span><span class="p">,</span>
+                                                                <span class="n">db_table</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># Call checkactive</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Querying TIDE Active State Table...&quot;</span><span class="p">)</span>
+                            <span class="n">activethreats</span><span class="p">[</span><span class="n">query</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkactive</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
+                                                               <span class="n">qtype</span><span class="p">,</span>
+                                                               <span class="n">apikey</span><span class="p">)</span>
+
+                        <span class="c1"># Call checktide</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">activeonly</span><span class="p">:</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Querying TIDE for all data...&quot;</span><span class="p">)</span>
+                            <span class="n">totalthreats</span><span class="p">[</span><span class="n">query</span><span class="p">]</span> <span class="o">=</span> <span class="n">checktide</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
+                                                            <span class="n">qtype</span><span class="p">,</span>
+                                                            <span class="n">apikey</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># ASSERT: qtype == &quot;invalid&quot;</span>
+                        <span class="n">bogus_lines</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">bogus_out</span><span class="p">:</span>
+                            <span class="n">output_bogus</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">bogus_out</span><span class="p">,</span> <span class="n">linecount</span><span class="p">)</span>
+
+        <span class="c1"># Output Report</span>
+        <span class="n">gen_report</span><span class="p">(</span><span class="n">activethreats</span><span class="p">,</span> <span class="n">totalthreats</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+        <span class="n">exitcode</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># Close files</span>
+        <span class="k">if</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">bogus_out</span><span class="p">:</span>
+            <span class="n">bogus_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Processing complete.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">exitcode</span></div>
+
+
+<span class="c1"># ** Main **</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">exitcode</span> <span class="o">=</span> <span class="n">main</span><span class="p">()</span>
+    <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="n">exitcode</span><span class="p">)</span>
+
+<span class="c1"># ** End Main **</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Chris Marrison
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+Welcome to Simple TIDE Report (simple_tide_report)’s documentation
+******************************************************************
+
+Contents:
+
+* Introduction
+
+* License
+
+* Requirements
+
+  * Special Libraries
+
+  * Additional Modules
+
+  * Complete List Of Modules
+
+* Input File Format
+
+  * Example Input File
+
+  * Potential Sources of Input Data
+
+  * Extracting Host Info from URLs
+
+  * Using Packet Captures to Create Input Files
+
+  * Using DNS Query Logs to Create Input Files
+
+* Source Documentation
+
+* ChangeLog
+
+
+Indices and tables
+******************
+
+* Index
+
+#* Module Index * Search Page

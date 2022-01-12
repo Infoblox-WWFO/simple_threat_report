@@ -1,0 +1,51 @@
+Requirements
+************
+
+simple_tide_report requires Python 3.x and was developed under Python
+3.6. As such they are unlikely to work with Python 2.x.
+
+
+Special Libraries
+=================
+
+simple_tide_report make use of the following ‘homegrown’ modules:
+
+   ibtidelib
+
+A version of this has been included.
+
+
+Additional Modules
+==================
+
+In addition to the standard Python 3.6 Modules simple_tide_report
+makes use of the following packages:
+
+   requests
+   tqdm
+
+
+Complete List Of Modules
+========================
+
+   import sys
+   import os
+   import shutil
+   import datetime
+   import argparse
+   import collections
+   import requests
+   import json
+   import logging
+   import tqdm
+   import ibtidelib
+
+Modules used by ibtidelib
+
+   import logging
+   import os
+   import re
+   import ipaddress
+   import requests
+   import datetime
+   import sqlite3
