@@ -61,7 +61,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 """
-__version__ = '3.0.0'
+__version__ = '3.0.1'
 __author__ = 'Chris Marrison'
 
 import bloxone
@@ -301,8 +301,8 @@ def checkactive(query, qtype, b1td):
             log.debug('{}, No active threats found'.format(query))
 
     else:
-        log.error("Query Failed with response: {}".format(rcode))
-        log.error("Body response: {}".format(rtext))
+        log.error("Query Failed with response: {}".format(response.status_code))
+        log.error("Body response: {}".format(response.text))
         totalthreats = -1
         profiles = "API Exception Occurred"
 
@@ -377,8 +377,8 @@ def checktide(query, qtype, b1td):
             log.debug('{}, No threat intel found'.format(query))
 
     else:
-        log.error("Query Failed with response: {}".format(rcode))
-        log.error("Body response: {}".format(rtext))
+        log.error("Query Failed with response: {}".format(response.status_code))
+        log.error("Body response: {}".format(response.text))
         totalthreats = -1
         profiles = "API Exception Occurred"
 

@@ -1,48 +1,56 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>simple_tide_report &mdash; Simple TIDE Report 2.3 documentation</title>
   
 
   
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
-  <script src="../_static/js/modernizr.min.js"></script>
+  
 
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -73,6 +81,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -84,7 +93,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../requirements.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../input_format.html">Input File Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
@@ -96,6 +104,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -130,11 +139,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">Module code</a> &raquo;</li>
         
@@ -167,25 +178,24 @@
 <span class="sd">  For more extensive output for a specific IOC use tide-lookup.py</span>
 
 <span class="sd"> Requirements:</span>
-<span class="sd">  Requires ibtidelib, requests, tqdm</span>
+<span class="sd">  Requires bloxone, tqdm</span>
 
 <span class="sd"> Usage:</span>
 <span class="sd">    simple_tide_report.py [options] &lt;query&gt;</span>
 <span class="sd">        -h  help</span>
+<span class="sd">        -c  &lt;file&gt; inifile location (default ./config.ini)</span>
 <span class="sd">        -i  &lt;file&gt; Input file (one IOC per line)</span>
 <span class="sd">        -o  &lt;file&gt; CSV Output file for results</span>
 <span class="sd">        -b  &lt;file&gt; File for reporting of bogus lines</span>
-<span class="sd">        -k  &lt;key&gt; TIDE apikey</span>
 <span class="sd">        -a  active threats only</span>
 <span class="sd">        -l  local database (activeonly)</span>
 <span class="sd">        -d  debug output</span>
 
 <span class="sd"> Author: Chris Marrison</span>
 
-<span class="sd"> Date Last Updated: 20190510</span>
+<span class="sd"> Date Last Updated: 20211004</span>
 
 <span class="sd"> .. todo::</span>
-<span class="sd">    * Config file</span>
 <span class="sd">    * Option to treat URLs as hostnames i.e. parse URL to extract host</span>
 <span class="sd">    * Considering adding option to do DNS lookup on hosts and TIDE lookups</span>
 <span class="sd">      on returned CNAMEs and IPs, however, may need different data structure</span>
@@ -218,9 +228,10 @@
 
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;2.5&#39;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;3.0.0&#39;</span>
 <span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Chris Marrison&#39;</span>
 
+<span class="kn">import</span> <span class="nn">bloxone</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
@@ -233,52 +244,10 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">tqdm</span>
 
-<span class="c1"># Add &#39;.&#39; to path if ios (Pythonista) to find ibtidelib</span>
-<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;ios&#39;</span><span class="p">:</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-
-<span class="kn">import</span> <span class="nn">ibtidelib</span>
-
 <span class="c1"># ** Global Variables **</span>
-<span class="c1"># apikey = &#39;&#39;</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># ** Functions **</span>
-
-
-<div class="viewcode-block" id="read_config"><a class="viewcode-back" href="../code.html#simple_tide_report.read_config">[docs]</a><span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Open and parse ini file</span>
-
-<span class="sd">    Parameters:</span>
-<span class="sd">        cfg_filename (str): name of inifile</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        api_key (str): API Key for authentication</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">cfg</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
-
-    <span class="c1"># Attempt to read api_key from ini file</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">configparser</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
-    <span class="c1"># Look for TIDE section</span>
-    <span class="k">if</span> <span class="s1">&#39;TIDE&#39;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
-        <span class="c1"># Check for api_key in TIDE section</span>
-        <span class="k">if</span> <span class="s1">&#39;api_key&#39;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;TIDE&#39;</span><span class="p">]:</span>
-            <span class="n">api_key</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;TIDE&#39;</span><span class="p">][</span><span class="s1">&#39;api_key&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;API Key Found in </span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">,</span> <span class="n">api_key</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No API key (api_key) variable in section TIDE.&#39;</span><span class="p">)</span>
-            <span class="n">api_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No TIDE Section in config file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">))</span>
-        <span class="n">api_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-
-    <span class="k">return</span> <span class="n">api_key</span></div>
 
 
 <div class="viewcode-block" id="parseargs"><a class="viewcode-back" href="../code.html#simple_tide_report.parseargs">[docs]</a><span class="k">def</span> <span class="nf">parseargs</span><span class="p">():</span>
@@ -301,8 +270,6 @@
                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output invalid lines to file&quot;</span><span class="p">)</span>
     <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;config.ini&#39;</span><span class="p">,</span>
                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Overide Config file&quot;</span><span class="p">)</span>
-    <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="s1">&#39;--apikey&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Overide API Key&quot;</span><span class="p">)</span>
     <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;--active&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Process active only&quot;</span><span class="p">)</span>
     <span class="n">parse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-l&#39;</span><span class="p">,</span> <span class="s1">&#39;--local&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
@@ -447,14 +414,14 @@
     <span class="k">return</span> <span class="n">mostrecent</span></div>
 
 
-<div class="viewcode-block" id="checkactive"><a class="viewcode-back" href="../code.html#simple_tide_report.checkactive">[docs]</a><span class="k">def</span> <span class="nf">checkactive</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">apikey</span><span class="p">):</span>
+<div class="viewcode-block" id="checkactive"><a class="viewcode-back" href="../code.html#simple_tide_report.checkactive">[docs]</a><span class="k">def</span> <span class="nf">checkactive</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">b1td</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Check for active threat intel, parse and output results</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        query (str): hostname, ip, or url</span>
 <span class="sd">        qtype (str): query type (host, ip, url)</span>
-<span class="sd">        apikey (str): TIDE API key</span>
+<span class="sd">        b1td (obj): Instantiated bloxone.b1td class</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        totalthreats (int): number of active threats Found</span>
@@ -472,14 +439,14 @@
     <span class="n">tclasses</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Query active TIDE data</span>
-    <span class="n">rcode</span><span class="p">,</span> <span class="n">rtext</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">querytidestate</span><span class="p">(</span><span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">apikey</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">b1td</span><span class="o">.</span><span class="n">querytidestate</span><span class="p">(</span><span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
     <span class="c1"># Process Response</span>
-    <span class="k">if</span> <span class="n">rcode</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="n">b1td</span><span class="o">.</span><span class="n">return_codes_ok</span><span class="p">:</span>
         <span class="c1"># Parse json</span>
-        <span class="n">parsed_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rtext</span><span class="p">)</span>
+        <span class="n">parsed_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Quey: </span><span class="si">{}</span><span class="s1">, Query type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">))</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Raw response: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rtext</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Raw response: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
 
         <span class="c1"># Parse Results</span>
         <span class="c1"># Check for threat construct</span>
@@ -509,14 +476,14 @@
     <span class="k">return</span> <span class="n">totalthreats</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">tclasses</span></div>
 
 
-<div class="viewcode-block" id="checktide"><a class="viewcode-back" href="../code.html#simple_tide_report.checktide">[docs]</a><span class="k">def</span> <span class="nf">checktide</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">apikey</span><span class="p">):</span>
+<div class="viewcode-block" id="checktide"><a class="viewcode-back" href="../code.html#simple_tide_report.checktide">[docs]</a><span class="k">def</span> <span class="nf">checktide</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">b1td</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Check against all threat intel data, parse and output results</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        query (str): hostname, ip, or url</span>
 <span class="sd">        qtype (str): query type (host, ip, url)</span>
-<span class="sd">        apikey (str): TIDE API key</span>
+<span class="sd">        b1td (obj): Instantiated bloxone.b1td class</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        totalthreats (int): number of active threats Found</span>
@@ -538,16 +505,16 @@
     <span class="n">tclasses</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Query TIDE (complete)</span>
-    <span class="n">rcode</span><span class="p">,</span> <span class="n">rtext</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">querytide</span><span class="p">(</span><span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">apikey</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">b1td</span><span class="o">.</span><span class="n">querytide</span><span class="p">(</span><span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
 
     <span class="c1"># Process response</span>
-    <span class="k">if</span> <span class="n">rcode</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="n">b1td</span><span class="o">.</span><span class="n">return_codes_ok</span><span class="p">:</span>
 
         <span class="c1"># Parse json</span>
-        <span class="n">parsed_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rtext</span><span class="p">)</span>
+        <span class="n">parsed_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Quey: </span><span class="si">{}</span><span class="s1">, Query type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">))</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Raw response: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rtext</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Raw response: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
 
         <span class="c1"># Check for threat construct</span>
         <span class="k">if</span> <span class="s2">&quot;threat&quot;</span> <span class="ow">in</span> <span class="n">parsed_json</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -617,7 +584,7 @@
     <span class="n">tclasses</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Query active TIDE data</span>
-    <span class="n">rows</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">db_query</span><span class="p">(</span><span class="n">db_cursor</span><span class="p">,</span> <span class="n">db_table</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">bloxone</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">db_query</span><span class="p">(</span><span class="n">db_cursor</span><span class="p">,</span> <span class="n">db_table</span><span class="p">,</span> <span class="n">qtype</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
     <span class="c1"># Process Response</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Quey: </span><span class="si">{}</span><span class="s1">, Query type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">qtype</span><span class="p">))</span>
@@ -756,7 +723,6 @@
 <span class="sd">    Core logic when running as script</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c1">#global apikey</span>
 
     <span class="c1"># Local Variables</span>
     <span class="n">exitcode</span> <span class="o">=</span> <span class="mi">0</span>
@@ -784,13 +750,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">configfile</span> <span class="o">=</span> <span class="s1">&#39;config.ini&#39;</span>
 
-    <span class="c1"># Set API Key</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">apikey</span><span class="p">:</span>
-        <span class="n">apikey</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">apikey</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">apikey</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">apikey</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;API Key not set.&#39;</span><span class="p">)</span>
+    <span class="c1"># Initialise bloxone</span>
+    <span class="n">b1td</span> <span class="o">=</span> <span class="n">bloxone</span><span class="o">.</span><span class="n">b1td</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
 
     <span class="c1"># General Options</span>
     <span class="n">activeonly</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">active</span>
@@ -802,9 +763,9 @@
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Forcing check for active threats only.&#39;</span><span class="p">)</span>
         <span class="n">activeonly</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Opening local database </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">database</span><span class="p">))</span>
-        <span class="n">db_cursor</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">opendb</span><span class="p">(</span><span class="n">database</span><span class="p">)</span>
+        <span class="n">db_cursor</span> <span class="o">=</span> <span class="n">bloxone</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">opendb</span><span class="p">(</span><span class="n">database</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">db_cursor</span><span class="p">:</span>
-            <span class="n">db_table</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="n">db_cursor</span><span class="p">)</span>
+            <span class="n">db_table</span> <span class="o">=</span> <span class="n">bloxone</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="n">db_cursor</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">db_table</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Local database table error, exiting.&#39;</span><span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -835,7 +796,7 @@
         <span class="n">outfile</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># Build regexes for data_type checking</span>
-    <span class="n">host_regex</span><span class="p">,</span> <span class="n">url_regex</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">buildregex</span><span class="p">()</span>
+    <span class="n">host_regex</span><span class="p">,</span> <span class="n">url_regex</span> <span class="o">=</span> <span class="n">bloxone</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">buildregex</span><span class="p">()</span>
 
     <span class="c1"># Check for input file and attempt to read</span>
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Attempting to open input file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inputfile</span><span class="p">))</span>
@@ -859,7 +820,7 @@
                     <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
                     <span class="c1"># Get data type for query</span>
-                    <span class="n">qtype</span> <span class="o">=</span> <span class="n">ibtidelib</span><span class="o">.</span><span class="n">data_type</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">host_regex</span><span class="p">,</span> <span class="n">url_regex</span><span class="p">)</span>
+                    <span class="n">qtype</span> <span class="o">=</span> <span class="n">bloxone</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data_type</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">host_regex</span><span class="p">,</span> <span class="n">url_regex</span><span class="p">)</span>
 
                     <span class="c1"># Check qtype and log bogus lines</span>
                     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Query: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
@@ -879,14 +840,14 @@
                             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Querying TIDE Active State Table...&quot;</span><span class="p">)</span>
                             <span class="n">activethreats</span><span class="p">[</span><span class="n">query</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkactive</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
                                                                <span class="n">qtype</span><span class="p">,</span>
-                                                               <span class="n">apikey</span><span class="p">)</span>
+                                                               <span class="n">b1td</span><span class="p">)</span>
 
                         <span class="c1"># Call checktide</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">activeonly</span><span class="p">:</span>
                             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Querying TIDE for all data...&quot;</span><span class="p">)</span>
                             <span class="n">totalthreats</span><span class="p">[</span><span class="n">query</span><span class="p">]</span> <span class="o">=</span> <span class="n">checktide</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
                                                             <span class="n">qtype</span><span class="p">,</span>
-                                                            <span class="n">apikey</span><span class="p">)</span>
+                                                            <span class="n">b1td</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># ASSERT: qtype == &quot;invalid&quot;</span>
                         <span class="n">bogus_lines</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -924,20 +885,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Chris Marrison
+        &#169; Copyright 2019, Chris Marrison.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -946,27 +912,16 @@
   </div>
   
 
-
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

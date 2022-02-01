@@ -3,6 +3,8 @@ ChangeLog
 *********
 
 
+| 20220201    v3.0.1  Fixed debug messages
+| 20211004    v3.0.0  Adapted to BloxOne
 | 20190626    v2.51   Minor clean up of comments
 | 20190503    v2.5    Moved to config.ini for apikey
 | 20190418    v2.3    Added test for 'ios' to add cwd to path
