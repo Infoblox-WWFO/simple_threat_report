@@ -11,7 +11,7 @@
 ### Global Vars ###
 DBONLY=0
 FORCE=0
-APIKEY="a9a1a24b8c3042a3a1efe88efb220e20d1c8a00333344ee081594c802ad50a4c"
+APIKEY="<your API Key>"
 DATE=`date +%Y%m%d`
 TYPES="host ip url"
 TYPE=""
@@ -25,7 +25,7 @@ TABLE="indicators"
 GETACTIVETHREATS()
 {
 echo "Retrieving active threats from TIDE for type ${TYPE}..."
-curl --request GET --url "https://platform.activetrust.net:8000/api/data/threats/state/${TYPE}?&data_format=csv" \
+curl --request GET --url "https://csp.infoblox.com/api/data/threats/state/${TYPE}?&data_format=csv" \
 	-u ${APIKEY}: > ${FILE}
 if [ $? -eq 0 ]
 then
