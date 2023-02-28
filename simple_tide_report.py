@@ -26,14 +26,14 @@
 
  Author: Chris Marrison
 
- Date Last Updated: 20211004
+ Date Last Updated: 20230227
 
  .. todo::
     * Option to treat URLs as hostnames i.e. parse URL to extract host
     * Considering adding option to do DNS lookup on hosts and TIDE lookups
       on returned CNAMEs and IPs, however, may need different data structure
 
-Copyright 2019 Chris Marrison / Infoblox
+Copyright 2019 - 2023 Chris Marrison / Infoblox
 
 Redistribution and use in source and binary forms,
 with or without modification, are permitted provided
@@ -61,7 +61,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 """
-__version__ = '3.0.1'
+__version__ = '3.1.0'
 __author__ = 'Chris Marrison'
 
 import bloxone
@@ -105,6 +105,10 @@ def parseargs():
                        help="Overide Config file")
     parse.add_argument('-a', '--active', action='store_true',
                        help="Process active only")
+    parse.add_argument('-C', '--check_domains', action='store_true',
+                       help="Check domain in addition to fqdn (hosts only)")
+    parse.add_argument('-w', '--webcat', action='store_true',
+                       help="Add Infoblox Web Categorisation Data (hosts only)")
     parse.add_argument('-l', '--local', type=str,
                        help="Use local database <filename>")
     parse.add_argument('-d', '--debug', action='store_true',
@@ -443,7 +447,30 @@ def checkoffline(query, qtype, db_cursor, db_table):
     return totalthreats, profiles, tclasses
 
 
-def gen_report(activethreats, totalthreats, filehandle):
+def get_web_categories(query, qtype, b1td):
+    '''
+    '''
+    web_categories = []
+    response = b1td.dossierquery(query, 
+                                    type=qtype, 
+                                    sources="infoblox_web_cat")
+
+    if response.status_code in b1td.return_codes_ok:
+        results = response.json().get('results')
+        data = results[0].get('data').get('results')
+        if data:
+            for cat in data:
+                web_categories.append(cat.get('name'))
+        else:
+            web_categories = ['Uncategorised']
+    
+    else: 
+        log.debug('{}, No active threats found'.format(query))
+    
+    return web_categories
+
+
+def gen_report(activethreats, totalthreats, web_categories, filehandle):
     '''
     Generate Threat Report
 
@@ -505,8 +532,8 @@ def gen_report(activethreats, totalthreats, filehandle):
         if filehandle:
             # Write Header
             print('Host,Active Threats,Active Profiles,Total Indicators, '
-                  'Indicator Profiles, Threat Classes,Last Seen,Last Expiry',
-                  file=filehandle)
+                  'Indicator Profiles, Threat Classes,Last Seen,Last Expiry'
+                  'Web Categories', file=filehandle)
         for item in activethreats:
             # Summarise Info
             # total_hosts += 1
@@ -518,19 +545,20 @@ def gen_report(activethreats, totalthreats, filehandle):
             # Human Output
             print('Host: {}, Active threats: {}, Active profiles: {}, '
                   'Total threats: {}, Profiles: {}, Classes: {}, '
-                  'Last seen: {}, Last Expiry: {}'
+                  'Last seen: {}, Last Expiry: {}, Web Categories: {}'
                   .format(item, activethreats[item][0], activethreats[item][1],
                           totalthreats[item][0], totalthreats[item][1],
                           totalthreats[item][2], totalthreats[item][3],
-                          totalthreats[item][4]))
+                          totalthreats[item][4], web_categories.get(item)))
             # File output
             if filehandle:
-                print('{},{},"{}",{},"{}","{}",{},{}'
+                print('{},{},"{}",{},"{}","{}",{},{},"{}"'
                       .format(item, activethreats[item][0],
                               activethreats[item][1], totalthreats[item][0],
                               totalthreats[item][1], totalthreats[item][2],
-                              totalthreats[item][3], totalthreats[item][4]),
-                      file=filehandle)
+                              totalthreats[item][3], totalthreats[item][4],
+                              web_categories.get(item)),
+                              file=filehandle)
         # Add Summary
         # Human
         print('Summary: Total = {}, Active = {}, Threats = {}, No info = {}'
@@ -561,6 +589,8 @@ def main():
     exitcode = 0
     activethreats = {}
     totalthreats = {}
+    web_cats = {}
+    query_list = []
     # threats = 0
     linecount = 0
     total_lines = 0
@@ -588,6 +618,7 @@ def main():
 
     # General Options
     activeonly = args.active
+    webcat = args.webcat
 
     # Local database option
     if args.local:
@@ -648,6 +679,8 @@ def main():
             with tqdm.tqdm(total=total_lines) as pbar:
                 for line in file:
                     query = str(line.rstrip())
+                    query_list = []
+                    query_list.append(query)
                     linecount += 1
                     # Update progress bar
                     pbar.update(1)
@@ -655,32 +688,55 @@ def main():
                     # Get data type for query
                     qtype = bloxone.utils.data_type(query, host_regex, url_regex)
 
-                    # Check qtype and log bogus lines
-                    log.debug("Query: {}".format(query))
-                    log.debug("Data type of query: {}".format(qtype))
-
-                    if qtype != "invalid":
-                        # Determine TIDE or Local db
-                        if database:
-                            # Use local database
-                            log.debug("Querying local database.")
-                            activethreats[query] = checkoffline(query,
-                                                                qtype,
-                                                                db_cursor,
-                                                                db_table)
+                    # Check for check domains and handle query and domain
+                    if qtype == 'host' and args.check_domains:
+                        domain = bloxone.utils.strip_host(query)
+                        if activethreats.get(domain):
+                            log.debug(f"Data for domain {domain} already retrieved")
                         else:
-                            # Call checkactive
-                            log.debug("Querying TIDE Active State Table...")
-                            activethreats[query] = checkactive(query,
-                                                               qtype,
-                                                               b1td)
+                            query_list.append(domain)
+                    else:
+                        domain = None
 
-                        # Call checktide
-                        if not activeonly:
-                            log.debug("Querying TIDE for all data...")
-                            totalthreats[query] = checktide(query,
-                                                            qtype,
-                                                            b1td)
+					# Process queries
+                    for query in query_list:
+                        # Check qtype and log bogus lines
+                        log.debug("Query: {}".format(query))
+                        log.debug("Data type of query: {}".format(qtype))
+
+                        # Check qtype and log bogus lines
+                        if qtype != "invalid":
+                            # Determine TIDE or Local db
+                            if database:
+                                # Use local database
+                                log.debug("Querying local database.")
+                                activethreats[query] = checkoffline(query,
+                                                                    qtype,
+                                                                    db_cursor,
+                                                                    db_table)
+                            else:
+                                # Call checkactive
+                                log.debug("Querying TIDE Active State Table...")
+                                activethreats[query] = checkactive(query,
+                                                                qtype,
+                                                                b1td)
+
+                            # Call checktide
+                            if not activeonly:
+                                log.debug("Querying TIDE for all data...")
+                                totalthreats[query] = checktide(query,
+                                                                qtype,
+                                                                b1td)
+                            
+                            # Add web Category
+                            if qtype == 'host' and webcat:
+                                log.debug("Collecting web categorisation")
+                                web_cats[query] = get_web_categories(query,
+                                                                qtype,
+                                                                b1td)
+                            elif webcat:
+                                web_cats[query] = 'N/A'
+
                     else:
                         # ASSERT: qtype == "invalid"
                         bogus_lines += 1
@@ -688,7 +744,7 @@ def main():
                             output_bogus(query, bogus_out, linecount)
 
         # Output Report
-        gen_report(activethreats, totalthreats, outfile)
+        gen_report(activethreats, totalthreats, web_cats, outfile)
 
     except IOError as error:
         log.error(error)
