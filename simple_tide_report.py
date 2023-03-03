@@ -61,7 +61,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 """
-__version__ = '3.1.0'
+__version__ = '3.2.0'
 __author__ = 'Chris Marrison'
 
 import bloxone
@@ -251,7 +251,7 @@ def most_recent(t1, t2):
     return mostrecent
 
 
-def checkactive(query, qtype, b1td):
+def checkactive(query, qtype, b1td, check_domain=False, domain_checked=False):
     '''
     Check for active threat intel, parse and output results
 
@@ -274,6 +274,7 @@ def checkactive(query, qtype, b1td):
     # property_stats = collections.Counter()
     profiles = []
     tclasses = []
+    results = [ totalthreats, profiles, tclasses, domain_checked ]
 
     # Query active TIDE data
     response = b1td.querytidestate(qtype, query)
@@ -287,7 +288,7 @@ def checkactive(query, qtype, b1td):
 
         # Parse Results
         # Check for threat construct
-        if "threat" in parsed_json.keys():
+        if parsed_json.get('threat'):
             for threat in parsed_json['threat']:
                 # Collect stats
                 totalthreats += 1
@@ -301,19 +302,29 @@ def checkactive(query, qtype, b1td):
             tclasses = getkeys(class_stats)
             log.debug('{}, {} active threat(s) {}'.format(query, totalthreats,
                                                           profiles))
+            results = [ totalthreats, profiles, tclasses, domain_checked ]
         else:
             log.debug('{}, No active threats found'.format(query))
+            if check_domain:
+                domain = bloxone.utils.strip_host(query)
+                if not domain == query:
+                    results = checkactive(domain, 
+                                          qtype, 
+                                          b1td, 
+                                          check_domain=False,
+                                          domain_checked=True)
 
     else:
         log.error("Query Failed with response: {}".format(response.status_code))
         log.error("Body response: {}".format(response.text))
         totalthreats = -1
         profiles = "API Exception Occurred"
+        results = [ totalthreats, profiles, tclasses, domain_checked ]
 
-    return totalthreats, profiles, tclasses
+    return results
 
 
-def checktide(query, qtype, b1td):
+def checktide(query, qtype, b1td, check_domain=False, domain_checked=False):
     '''
     Check against all threat intel data, parse and output results
 
@@ -340,6 +351,8 @@ def checktide(query, qtype, b1td):
     # property_stats = collections.Counter()
     profiles = []
     tclasses = []
+    results = [ totalthreats, profiles, tclasses, 
+                last_available, last_expiration, domain_checked ]
 
     # Query TIDE (complete)
     response = b1td.querytide(qtype, query)
@@ -354,7 +367,7 @@ def checktide(query, qtype, b1td):
         log.debug('Raw response: {}'.format(response.text))
 
         # Check for threat construct
-        if "threat" in parsed_json.keys():
+        if parsed_json.get('threat'):
             for threat in parsed_json['threat']:
                 # Collect stats
                 totalthreats += 1
@@ -379,6 +392,21 @@ def checktide(query, qtype, b1td):
                       .format(query, totalthreats, profiles, tclasses))
         else:
             log.debug('{}, No threat intel found'.format(query))
+            if check_domain:
+                domain = bloxone.utils.strip_host(query)
+                if not domain == query:
+                    results = checktide(domain, 
+                                        qtype, 
+                                        b1td, 
+                                        check_domain=False,
+                                        domain_checked=True)
+                    if results:
+                        totalthreats = results[0]
+                        profiles = results[1]
+                        tclasses = results[2]
+                        last_available = results[3]
+                        last_expiration = results[4]
+                        domain_checked = results[5]
 
     else:
         log.error("Query Failed with response: {}".format(response.status_code))
@@ -392,7 +420,10 @@ def checktide(query, qtype, b1td):
     if last_expiration == datetime.datetime.fromtimestamp(0):
         last_expiration = ''
 
-    return totalthreats, profiles, tclasses, last_available, last_expiration
+    results = [ totalthreats, profiles, tclasses, 
+                last_available, last_expiration, domain_checked ]
+
+    return results
 
 
 def checkoffline(query, qtype, db_cursor, db_table):
@@ -470,6 +501,51 @@ def get_web_categories(query, qtype, b1td):
     return web_categories
 
 
+def load_list(filename):
+    '''
+    '''
+    items = []
+    with open(filename) as file:
+        for line in file:
+            items.append(str(line.rstrip()))
+    
+    return items
+
+
+def checkwebcat(webcats, block_list = []):
+    '''
+    '''
+    result = False
+    flag = False
+
+    
+    if webcats:
+        for item in block_list:
+            for cat in webcats:
+                if item.lower() in cat.lower():
+                    result = True
+                    flag = True
+                    break
+            if flag:
+                break
+    
+    return result
+
+
+def checkcountry(domain, country_codes=['.ru', '.cn']):
+    '''
+    '''
+    result = False
+
+    if domain:
+        for co in country_codes:
+            if co in domain:
+                result = True
+                break
+    
+    return result
+
+
 def gen_report(activethreats, totalthreats, web_categories, filehandle):
     '''
     Generate Threat Report
@@ -488,6 +564,9 @@ def gen_report(activethreats, totalthreats, web_categories, filehandle):
     total_hosts = len(activethreats)
     with_active = 0
     with_threats = 0
+    action = ''
+    block_categories = load_list('block_categories')
+    country_codes = load_list('country_codes')
 
     # Parse items and output
     if len(totalthreats) == 0:
@@ -531,9 +610,9 @@ def gen_report(activethreats, totalthreats, web_categories, filehandle):
         # Check for CSV output
         if filehandle:
             # Write Header
-            print('Host,Active Threats,Active Profiles,Total Indicators, '
-                  'Indicator Profiles, Threat Classes,Last Seen,Last Expiry'
-                  'Web Categories', file=filehandle)
+            print('Host,Action,Active Threats,Active Profiles,Total Indicators, '
+                  'Indicator Profiles, Threat Classes,Last Seen,Last Expiry,'
+                  'Domain Checked, Web Categories', file=filehandle)
         for item in activethreats:
             # Summarise Info
             # total_hosts += 1
@@ -541,24 +620,35 @@ def gen_report(activethreats, totalthreats, web_categories, filehandle):
                 with_active += 1
             if totalthreats[item][0] > 0:
                 with_threats += 1
+            
+            if activethreats[item][0] > 0:
+                action = 'Active'
+            elif totalthreats[item][0] > 0:
+                action = 'Not Active'
+            elif checkwebcat(web_categories.get(item), block_list=block_categories):
+                action = 'Category Block'
+            elif checkcountry(item, country_codes=country_codes):
+                action = 'Country Block'
+            else:
+                action = ''
 
             # Human Output
-            print('Host: {}, Active threats: {}, Active profiles: {}, '
+            print('Host: {}, Action: {}, Active threats: {}, Active profiles: {}, '
                   'Total threats: {}, Profiles: {}, Classes: {}, '
-                  'Last seen: {}, Last Expiry: {}, Web Categories: {}'
-                  .format(item, activethreats[item][0], activethreats[item][1],
+                  'Last seen: {}, Last Expiry: {}, Domain Checked: {}, Web Categories: {}'
+                  .format(item, action, activethreats[item][0], activethreats[item][1],
                           totalthreats[item][0], totalthreats[item][1],
                           totalthreats[item][2], totalthreats[item][3],
-                          totalthreats[item][4], web_categories.get(item)))
+                          totalthreats[item][4], totalthreats[item][5],
+                          web_categories.get(item)))
             # File output
             if filehandle:
-                print('{},{},"{}",{},"{}","{}",{},{},"{}"'
-                      .format(item, activethreats[item][0],
-                              activethreats[item][1], totalthreats[item][0],
-                              totalthreats[item][1], totalthreats[item][2],
-                              totalthreats[item][3], totalthreats[item][4],
-                              web_categories.get(item)),
-                              file=filehandle)
+                print(f'{item},{action},{activethreats[item][0]}, ' +
+                      f'"{activethreats[item][1]}",{totalthreats[item][0]},' +
+                      f'"{totalthreats[item][1]}","{totalthreats[item][2]}",' +
+                      f'{totalthreats[item][3]},{totalthreats[item][4]},' +
+                      f'{totalthreats[item][5]},"{web_categories.get(item)}"',
+                      file=filehandle)
         # Add Summary
         # Human
         print('Summary: Total = {}, Active = {}, Threats = {}, No info = {}'
@@ -589,8 +679,8 @@ def main():
     exitcode = 0
     activethreats = {}
     totalthreats = {}
+    domain_hit = []
     web_cats = {}
-    query_list = []
     # threats = 0
     linecount = 0
     total_lines = 0
@@ -619,6 +709,7 @@ def main():
     # General Options
     activeonly = args.active
     webcat = args.webcat
+    check_domain = args.check_domains
 
     # Local database option
     if args.local:
@@ -679,8 +770,6 @@ def main():
             with tqdm.tqdm(total=total_lines) as pbar:
                 for line in file:
                     query = str(line.rstrip())
-                    query_list = []
-                    query_list.append(query)
                     linecount += 1
                     # Update progress bar
                     pbar.update(1)
@@ -688,54 +777,43 @@ def main():
                     # Get data type for query
                     qtype = bloxone.utils.data_type(query, host_regex, url_regex)
 
-                    # Check for check domains and handle query and domain
-                    if qtype == 'host' and args.check_domains:
-                        domain = bloxone.utils.strip_host(query)
-                        if activethreats.get(domain):
-                            log.debug(f"Data for domain {domain} already retrieved")
-                        else:
-                            query_list.append(domain)
-                    else:
-                        domain = None
-
 					# Process queries
-                    for query in query_list:
-                        # Check qtype and log bogus lines
-                        log.debug("Query: {}".format(query))
-                        log.debug("Data type of query: {}".format(qtype))
+                    # Check qtype and log bogus lines
+                    log.debug("Query: {}".format(query))
+                    log.debug("Data type of query: {}".format(qtype))
 
-                        # Check qtype and log bogus lines
-                        if qtype != "invalid":
-                            # Determine TIDE or Local db
-                            if database:
-                                # Use local database
-                                log.debug("Querying local database.")
-                                activethreats[query] = checkoffline(query,
-                                                                    qtype,
-                                                                    db_cursor,
-                                                                    db_table)
-                            else:
-                                # Call checkactive
-                                log.debug("Querying TIDE Active State Table...")
-                                activethreats[query] = checkactive(query,
+                    # Check qtype and log bogus lines
+                    if qtype != "invalid":
+                        # Determine TIDE or Local db
+                        if database:
+                            # Use local database
+                            log.debug("Querying local database.")
+                            activethreats[query] = checkoffline(query,
                                                                 qtype,
-                                                                b1td)
+                                                                db_cursor,
+                                                                db_table)
+                        else:
+                            # Call checkactive
+                            log.debug("Querying TIDE Active State Table...")
+                            activethreats[query] = checkactive(query,
+                                                            qtype,
+                                                            b1td,
+                                                            check_domain = check_domain)
 
-                            # Call checktide
-                            if not activeonly:
-                                log.debug("Querying TIDE for all data...")
-                                totalthreats[query] = checktide(query,
-                                                                qtype,
-                                                                b1td)
-                            
-                            # Add web Category
-                            if qtype == 'host' and webcat:
-                                log.debug("Collecting web categorisation")
-                                web_cats[query] = get_web_categories(query,
-                                                                qtype,
-                                                                b1td)
-                            elif webcat:
-                                web_cats[query] = 'N/A'
+                        # Call checktide
+                        if not activeonly:
+                            log.debug("Querying TIDE for all data...")
+                            totalthreats[query] = checktide(query,
+                                                            qtype,
+                                                            b1td,
+                                                            check_domain = check_domain)
+                        
+                        # Add web Category
+                        if qtype == 'host' and webcat:
+                            log.debug("Collecting web categorisation")
+                            web_cats[query] = get_web_categories(query,
+                                                            qtype,
+                                                            b1td)
 
                     else:
                         # ASSERT: qtype == "invalid"

@@ -1,7 +1,7 @@
-Host,Active Threats,Active Profiles,Total Indicators, Indicator Profiles,Threat Classes,Last Seen,Last Expiry
-www.google.com,0,"[]",0,"[]","[]",,
-eicar.co,1,"['IID']",1,"['IID']","['MaliciousNameserver']",2016-11-09 22:55:27.495000,2038-01-19 22:55:27.495000
-http://t7rminal.space/,0,"[]",0,"[]","[]",,
-1.1.1.1,2,"['IID', 'EmergingThreats']",1412,"['AISCOMM', 'EmergingThreats', 'IID']","['Policy', 'Sinkhole', 'DDoS', 'MalwareC2', 'InternetInfrastructure']",2019-03-25 01:17:17.732000,2019-03-25 09:01:05.963000
-info.spiritsoft.cn,1,"['EmergingThreats']",1033,"['EmergingThreats']","['MalwareC2']",2019-04-01 13:15:25.696000,
+Host,Active Threats,Active Profiles,Total Indicators, Indicator Profiles, Threat Classes,Last Seen,Last Expiry,Domain Checked, Web Categories
+www.google.com,0,"[]",0,"[]","[]",,,"True"
+eicar.co,2,"['IID']",43,"['IID', 'SURBL']","['MaliciousNameserver', 'Policy']",2023-03-02 02:19:13.065000,2038-01-19 22:55:27.495000,"False"
+http://t7rminal.space/,0,"[]",0,"[]","[]",,,"False"
+1.1.1.1,1,"['IID']",2399,"['AISCOMM', 'EmergingThreats', 'IID']","['Policy', 'Sinkhole', 'DDoS', 'MalwareC2', 'InternetInfrastructure']",2023-03-01 22:01:36.158000,2023-03-08 22:00:15.587000,"False"
+info.spiritsoft.cn,1,"['EmergingThreats']",1549,"['EmergingThreats']","['MalwareC2']",2023-01-16 15:03:37.772000,2023-04-25 00:00:00,"False"
 Summary: Total = 5, Active = 3, Threats = 3, No info = 2
