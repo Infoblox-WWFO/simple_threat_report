@@ -2,11 +2,11 @@
 Input File Format
 *****************
 
-:mod:`simple_tide_report` is designed for performning lookups on 'bulk' sets of
+:mod:`simple_threat_report` is designed for performning lookups on 'bulk' sets of
 data. Tests can be performed against any of the three IOC types that are
 recognised by TIDE. i.e. hosts, IPs and URLs.
 
-The file format used by :mod:`simple_tide_report` is therefore simply a one query per
+The file format used by :mod:`simple_threat_report` is therefore simply a one query per
 line where each line contains either a hostname, IP address or URL. Files can
 contain data of a single data type or multiple data types as the script automatically determines the data type and uses this for the TIDE query.
 

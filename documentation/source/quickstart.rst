@@ -2,12 +2,12 @@
 Quick Start Guide
 *****************
 
-The simplest place to start is to run the :mod:`simple_tide_report` Script
+The simplest place to start is to run the :mod:`simple_threat_report` Script
 with the -h or --help option to display the simple usage help text.::
 
-  $ ./simple_tide_report.py --help
+  $ ./simple_threat_report.py --help
 
-  usage: simple_tide_report.py [-h] -i INPUT [-o OUTPUT] [-b BOGUS] [-c CONFIG]
+  usage: simple_threat_report.py [-h] -i INPUT [-o OUTPUT] [-b BOGUS] [-c CONFIG]
                                [-k APIKEY] [-a] [-l LOCAL] [-d]
 
   TIDE reporting tool with simplified CSV output and statistics
@@ -22,27 +22,24 @@ with the -h or --help option to display the simple usage help text.::
                           Output invalid lines to file
     -c CONFIG, --config CONFIG
                           Overide Config file
-    -k APIKEY, --apikey APIKEY
-                          Overide API Key
     -a, --active          Process active only
+    -C, --check_domains   Check domain in addition to fqdn (hosts only)
+    -w, --webcat          Add Infoblox Web Categorisation Data (hosts only)
     -l LOCAL, --local LOCAL
                           Use local database <filename>
     -d, --debug           Enable debug messages
 
+
 Configuring the API Key
 ========================
 
-Although the script will accept your API Key as part of the command line using
-the --apikey / -k option, :mod:`simple_tide_report` supports the use of a config.ini file to store the API Key.
+:mod:`simple_threat_report` supports the use of a config.ini file to store the API Key.
 
-.. note::
-  Using the --apikey/-k option overrides any API Key stored in
-  the ``config.ini``
-
-By default :mod:`simple_tide_report` will look for a ``config.ini`` file in the
+By default :mod:`simple_threat_report` will look for a ``config.ini`` file in the
 current working directory. The default config.ini file can be overridden with
 the --config/-c option. This allows you to call the script with alternative ini
 files as needed without using the --apikey option.
+
 
 ini File Format
 ---------------
@@ -50,17 +47,15 @@ ini File Format
 A sample config.ini file is included with this package, however, the simple
 format is shown below::
 
-  [TIDE]
-  api_key = <your API Key Here>
+  [BloxOne]
+  url = 'https://csp.infoblox.com'
+  api_version = 'v1'
+  api_key = '<you API Key here>'
 
-Add you API Key from the portal to the :data:`apikey` property and save the
-file. An example, using a fictious key is shown::
 
-  [TIDE]
-  apikey = c3042afe88ea9a1a24b8fb220e203343a1e4ee08d1c8a00331594c802ad50a4c
+Add you API Key from the BloxOne Portal to the :data:`api_key` property and save the
+file. 
 
-Once this step is complete you will not have to use the --apikey / -k option
-unless you specifically want to override the configured key.
 
 A Simple Example
 ================
