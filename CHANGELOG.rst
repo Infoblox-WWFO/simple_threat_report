@@ -3,6 +3,7 @@ ChangeLog
 *********
 
 
+| 20230227	  v3.2.0  Added web cat, ccTLD checking for hosts and action field
 | 20220201    v3.0.1  Fixed debug messages
 | 20211004    v3.0.0  Adapted to BloxOne
 | 20190626    v2.51   Minor clean up of comments

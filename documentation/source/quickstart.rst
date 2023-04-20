@@ -69,3 +69,42 @@ Using the simple sample input file from the :doc:`Input File Format <input_forma
   info.spiritsoft.cn
 
 Which can be found in the file :file:`examples/example1.txt`
+
+Action Field
+============
+
+The output file includes an additonal Action field to simplify reporting or
+understanding of the output. Actions include::
+
+  Active
+    IOC belongs to a currently active Threat
+  
+  Not Active
+    Historical data was found, however, it is not considered currently active
+  
+  Category Block (--webcat)
+    No threat intel found but a policy block based on web category should be considered
+  
+  Country Block 
+    A policy based on country blocks could be considered
+
+
+The *Category Block* and *Country Block* actions are based on the contents 
+of the *block_categories* and *country_codes* configuration files.
+
+The field is not populated in the event that no match was found.
+
+
+block_categories and country_codes
+----------------------------------
+
+The *block_categories* file contains a list of keywords that are used when
+matching the web category to determine the Category Block recommendation when
+there is no threat intel for the IOC.
+
+The *country_codes* file contains a list of ccTLDs used to match when there is
+no threat data or web categorisation match.
+
+Sample versions of these files are included for example purposes only and do
+not represent a policy or recommendation. The contents should be adapted as 
+required by your security policies.
